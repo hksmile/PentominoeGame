@@ -26,22 +26,71 @@ namespace myFirstAzureWebApp.Models
     {
         public override IPentominoePuzzlePiece CreatePuzzlePiece(string type)
         {
-            if (type == "X")
-            {
-                return new PieceX();
-            }
+            
             if (type == "I")
             {
                 return new PieceI();
+            }
+            if (type == "L")
+            {
+                return new PieceL();
             }
             if (type =="T")
             {
                 return new PieceT();
             }
+            if (type == "U")
+            {
+                return new PieceU();
+            }
+            if (type == "W")
+            {
+                return new PieceW();
+            }
+            if (type == "X")
+            {
+                return new PieceX();
+            }
+            if (type == "Y")
+            {
+                return new PieceY();
+            }
+
             return null;
         }
     }
+    public class PieceL : IPentominoePuzzlePiece
+    {
+        public string pieceName()
+        {
+            return "L";
+        }
+        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
 
+        public PieceL()
+        {
+            units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, -1);
+            units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, -1, 2, 3, -1);
+            units[2] = new PentominoePuzzleUnit(2, 1, -1, -1, -1, 3, -1, -1, -1);
+            units[3] = new PentominoePuzzleUnit(3, -1, -1, 1, 2, 4, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
+
+
+        }
+
+        public PentominoePuzzleUnit[] getUnits()
+        {
+            //could use orientation to adjust and return adjancent on the fly
+            //or... I could put orientation to adjancent in a hash... this might be better... then naming orientations wouldn't really matter and client could just loop through transformations.
+            return units;
+        }
+        public List<PentominoePuzzleUnit[]> getPieceTransformations(int aroundPlacementUnit)
+        {
+            List<PentominoePuzzleUnit[]> adjacentUnits = new List<PentominoePuzzleUnit[]>();
+            return adjacentUnits;
+        }
+
+    }
     public class PieceT : IPentominoePuzzlePiece
     {
         public string pieceName()
@@ -106,6 +155,70 @@ namespace myFirstAzureWebApp.Models
         }
 
     }
+    public class PieceU : IPentominoePuzzlePiece
+    {
+        public string pieceName()
+        {
+            return "U";
+        }
+        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
+
+        public PieceU()
+        {
+            units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, 2);
+            units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, 2, -1, -1, -1);
+            units[2] = new PentominoePuzzleUnit(2, -1, 1, 0, 1, 3, -1, -1, -1);
+            units[3] = new PentominoePuzzleUnit(3, 4, -1, -1, 2, -1, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, -1, -1, 3, 2, -1);
+
+
+        }
+
+        public PentominoePuzzleUnit[] getUnits()
+        {
+            //could use orientation to adjust and return adjancent on the fly
+            //or... I could put orientation to adjancent in a hash... this might be better... then naming orientations wouldn't really matter and client could just loop through transformations.
+            return units;
+        }
+        public List<PentominoePuzzleUnit[]> getPieceTransformations(int aroundPlacementUnit)
+        {
+            List<PentominoePuzzleUnit[]> adjacentUnits = new List<PentominoePuzzleUnit[]>();
+            return adjacentUnits;
+        }
+
+    }
+    public class PieceW : IPentominoePuzzlePiece
+    {
+        public string pieceName()
+        {
+            return "W";
+        }
+        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
+
+        public PieceW()
+        {
+            units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, 2, -1);
+            units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, 2, -1, 3, -1);
+            units[2] = new PentominoePuzzleUnit(2, 1, -1, 0, 1, -1, 3, 4, -1);
+            units[3] = new PentominoePuzzleUnit(3, 2, -1, 1, -1, 4, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
+
+
+        }
+
+        public PentominoePuzzleUnit[] getUnits()
+        {
+            //could use orientation to adjust and return adjancent on the fly
+            //or... I could put orientation to adjancent in a hash... this might be better... then naming orientations wouldn't really matter and client could just loop through transformations.
+            return units;
+        }
+        public List<PentominoePuzzleUnit[]> getPieceTransformations(int aroundPlacementUnit)
+        {
+            List<PentominoePuzzleUnit[]> adjacentUnits = new List<PentominoePuzzleUnit[]>();
+            return adjacentUnits;
+        }
+
+    }
     public class PieceX : IPentominoePuzzlePiece
     {
         public string pieceName()
@@ -138,6 +251,38 @@ namespace myFirstAzureWebApp.Models
         }
 
 }
+    public class PieceY : IPentominoePuzzlePiece
+    {
+        public string pieceName()
+        {
+            return "Y";
+        }
+        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
+
+        public PieceY()
+        {
+            units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 2, 3, 1);
+            units[1] = new PentominoePuzzleUnit(1, -1, 0, -1, -1, 2, -1, -1, -1);
+            units[2] = new PentominoePuzzleUnit(2, 0, -1, -1, 1, 3, -1, -1, -1);
+            units[3] = new PentominoePuzzleUnit(3, -1, -1, 0, 2, 4, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
+
+
+        }
+
+        public PentominoePuzzleUnit[] getUnits()
+        {
+            //could use orientation to adjust and return adjancent on the fly
+            //or... I could put orientation to adjancent in a hash... this might be better... then naming orientations wouldn't really matter and client could just loop through transformations.
+            return units;
+        }
+        public List<PentominoePuzzleUnit[]> getPieceTransformations(int aroundPlacementUnit)
+        {
+            List<PentominoePuzzleUnit[]> adjacentUnits = new List<PentominoePuzzleUnit[]>();
+            return adjacentUnits;
+        }
+
+    }
 
     public class PentominoePuzzleUnit
     { 
@@ -267,9 +412,6 @@ namespace myFirstAzureWebApp.Models
         }
 
 
-
-         
-
         public bool PlacePiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex)
         {
             return DoesUnitPieceCoverLocation(piece, 0, xIndex, yIndex, null);     
@@ -336,6 +478,17 @@ namespace myFirstAzureWebApp.Models
             piece = puzzlePieceFactory.CreatePuzzlePiece("T");
             unUsedPieces.Add(piece.pieceName(), piece);
 
+            piece = puzzlePieceFactory.CreatePuzzlePiece("U");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("L");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("W");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("Y");
+            unUsedPieces.Add(piece.pieceName(), piece);
             /*
             unUsedPieces.Add(new PentominoePuzzlePiece("F"));
             

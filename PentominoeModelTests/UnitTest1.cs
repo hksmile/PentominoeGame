@@ -63,5 +63,81 @@ namespace PentominoeModelTests
             bool ret = board.PlacePiece(piece, 8, 2);
             Assert.IsTrue(ret);
         }
+
+        [TestMethod]
+        public void PlacePieceUOutOfBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("U");
+            bool ret = board.PlacePiece(piece, 7, 0);
+            Assert.IsTrue(!ret);
+
+        }
+
+        [TestMethod]
+        public void PlacePieceUInBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("U");
+            bool ret = board.PlacePiece(piece, 7, 1);
+            Assert.IsTrue(ret);
+        }
+
+        [TestMethod]
+        public void PlacePieceLOutOfBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("L");
+            bool ret = board.PlacePiece(piece, 0, 6);
+            Assert.IsTrue(!ret);
+
+        }
+
+        [TestMethod]
+        public void PlacePieceLInBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("L");
+            bool ret = board.PlacePiece(piece, 4, 4);
+            Assert.IsTrue(ret);
+        }
+
+        [TestMethod]
+        public void PlacePieceWOutOfBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("W");
+            bool ret = board.PlacePiece(piece, 8, 5);
+            Assert.IsTrue(!ret);
+
+        }
+
+        [TestMethod]
+        public void PlacePieceWInBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("W");
+            bool ret = board.PlacePiece(piece, 5, 5);
+            Assert.IsTrue(ret);
+        }
+
+        [TestMethod]
+        public void PlacePieceYOutOfBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("Y");
+            bool ret = board.PlacePiece(piece, 0, 0);
+            Assert.IsTrue(!ret);
+
+        }
+
+        [TestMethod]
+        public void PlacePieceYInBounds()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("Y");
+            bool ret = board.PlacePiece(piece, 5, 3);
+            Assert.IsTrue(ret);
+        }
     }
 }
