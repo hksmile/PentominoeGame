@@ -107,7 +107,7 @@ namespace PentominoeModelTests
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
             IPentominoePuzzlePiece piece = board.ChoosePiece("W");
-            bool ret = board.PlacePiece(piece, 8, 5);
+            bool ret = board.PlacePiece(piece, 9, 1);
             Assert.IsTrue(!ret);
 
         }
@@ -164,7 +164,7 @@ namespace PentominoeModelTests
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
             IPentominoePuzzlePiece piece = board.ChoosePiece("P");
-            bool ret = board.PlacePiece(piece, 4, 1);
+            bool ret = board.PlacePiece(piece, 4, 0);
             Assert.IsTrue(!ret);
 
         }
@@ -233,6 +233,49 @@ namespace PentominoeModelTests
             IPentominoePuzzlePiece piece = board.ChoosePiece("F");
             bool ret = board.PlacePiece(piece, 8, 5);
             Assert.IsTrue(ret);
+        }
+
+        [TestMethod]
+        public void PlacePieceFandL()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("F");
+            bool ret = board.PlacePiece(piece, 4, 2);
+            Assert.IsTrue(ret);
+          
+
+            piece = board.ChoosePiece("L");
+            ret = board.PlacePiece(piece, 4, 0);
+            Assert.IsFalse(ret);
+
+
+        }
+
+        [TestMethod]
+        public void TestMultiArrays()
+        {
+            int[][] d = new int[2][];
+            d[0] = new int[3] {1,2, 3 };
+            d[1] = new int[3] { 4, 5, 6 };
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(" " + d[i][j] + " ");
+                }
+                Console.Write(Environment.NewLine + Environment.NewLine);
+            }
+
+            int[,] b = new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(" " + b[i,j] + " ");
+                }
+                Console.Write(Environment.NewLine + Environment.NewLine);
+            }
+
         }
     }
 }
