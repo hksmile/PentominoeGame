@@ -1,6 +1,7 @@
 ﻿
  <div id="myCanvas"></div>
-<p>
+
+<!--<p>
     <button onclick="drawRects()">Click to Draw Rectangles with Two.js</button>
 </p>
 <p>
@@ -47,3 +48,28 @@
 <p>
     <button onclick="drawPentominoeN()">Click to Draw N shaped Pentominoe</button>
 </p>
+    -->
+
+<p>
+    <button onclick="drawGameBoard(@Json.Encode(ViewBag.Board), 50)">Draw Game Board</button>
+</p>
+<p>
+    <button onclick="drawGameBoard(@Json.Encode(Model), 50)">Draw Game Board from model</button>
+</p>
+
+<form method="post">
+    <label for="PuzzlePiece">Select piece to play: </label>
+    <input type="text" name="PuzzlePiece" class="txt" id="PuzzlePiece" />
+
+    <p>
+        <label>Where do you want to play piece</label>
+        <br />
+        <label for="xLocation"> X Value</label>
+        <input type="number" name="xLocation" id="xLocation" />
+        <br />
+
+        <label for="yLocation"> Y Value</label>
+        <input type="number" name="yLocation" id="yLocation" />
+    </p>
+    <input type="submit" />
+</form>

@@ -136,6 +136,67 @@ function initalizeTwo() {
     }).appendTo(elem);
 }
 
+
+
+function drawGameBoardTest(squareLength) {
+    if (!two) initalizeTwo();
+
+    var b = [
+        ["green", "white", "red"],
+        ["white", "green", "red"]
+    ];
+
+
+    width = 3;
+    height = 2;
+
+    var xIndex = 150;
+    var yIndex = 200;
+
+    for (var i = 0; i < height; i++) {
+        for (var j = 0; j < width; j++) {
+            var rect = two.makeRectangle(xIndex, yIndex, squareLength, squareLength);
+            rect.stroke = "blue";
+            rect.fill = b[i][j];
+            two.update();
+            xIndex += squareLength;
+        }
+        xIndex = 150;
+        yIndex += squareLength;
+    }
+}
+
+function drawGameBoard(b, squareLength) {
+    if (!two) initalizeTwo();
+    if (b !== null && b.Data !== null && b.Data.length > 0 && b.Data[0].length > 0) {
+    var board = b.Data;
+
+     var width  = 0;
+    var height = 0;
+
+    var xIndex = 150;
+    var yIndex = 200;
+
+    height = board.length;
+    for (var i = 0; i < height; i++) {
+        width = board[i].length;
+        for (var j = 0; j < width; j++) {
+            var rect = two.makeRectangle(xIndex, yIndex, squareLength, squareLength);
+            rect.stroke = "blue";
+            var color = "black";
+            if (board[i][j] == null) color = "white"; 
+            rect.fill = color;
+            two.update();
+            xIndex += squareLength;
+        }
+        xIndex = 150;
+        yIndex += squareLength;
+    }
+
+    }
+}
+
+
 function drawWindowArt(left, top, direction) {
 
     if (!two) initalizeTwo();
@@ -427,4 +488,3 @@ function drawPentominoeN() {
     
     two.update();
 }
-
