@@ -50,7 +50,7 @@ namespace myFirstAzureWebApp.Controllers
             if (PuzzlePiece != "")
             {
                 IPentominoePuzzlePiece piece = board.ChoosePiece(PuzzlePiece);
-                bool ret = board.PlacePiece(piece, xLocation, yLocation);
+                bool ret = board.PlayPiece(piece, xLocation, yLocation);
             }
             else
                 board.solveBoard();
@@ -64,7 +64,7 @@ namespace myFirstAzureWebApp.Controllers
 
             PentominoeGameBoard board = new PentominoeGameBoard();
             IPentominoePuzzlePiece piece = board.ChoosePiece("Z");
-            bool ret = board.PlacePiece(piece, 1, 5);
+            bool ret = board.PlayPiece(piece, 1, 5);
             string[][] b = board.GetBoard();
 
             ViewBag.Board = Json(b);

@@ -125,7 +125,7 @@ function getRandomIntInclusive(min, max) {
 }
 
 var two;
-var colors = ["red", "blue", "green", "magenta", "brown"];
+  var colors = ["red", "blue", "green", "magenta", "brown"];
 var window_width = 20;
 var colorDictionary = {"I": "blue", "F":"green", "Y":"yellow", "V":"red", "T":"brown", "X":"darkblue", "Z":"gray", "U":"lime", "N":"cyan", "P":"pink", "L":"orange", "W":"purple"};
 

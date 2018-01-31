@@ -723,21 +723,22 @@ namespace myFirstAzureWebApp.Models
     }
     public class PentominoeGameBoard
     {
-       private PentominoeGameBoardLocation[,] gameBoard;
-       private Dictionary<string, IPentominoePuzzlePiece> unUsedPieces;
-        
-       private int boardHeight = 6;
-       private int boardWidth = 10;
+        private PentominoeGameBoardLocation[,] gameBoard;
+        private Dictionary<string, IPentominoePuzzlePiece> unUsedPieces;
+        private Stack<HashSet<PentominoeGameBoardLocation>> playStack;
+
+        private int boardHeight = 6;
+        private int boardWidth = 10;
 
         public PentominoeGameBoard()
         {
             gameBoard = new PentominoeGameBoardLocation[boardHeight, boardWidth];
-            
-            for (int i = 0; i< boardHeight; i++)
+
+            for (int i = 0; i < boardHeight; i++)
             {
-                for (int j = 0; j< boardWidth; j++)
+                for (int j = 0; j < boardWidth; j++)
                 {
-                    PentominoeGameBoardLocation loc = new PentominoeGameBoardLocation(j,i);
+                    PentominoeGameBoardLocation loc = new PentominoeGameBoardLocation(j, i);
                     gameBoard[i, j] = loc;
                 }
             }
@@ -745,14 +746,39 @@ namespace myFirstAzureWebApp.Models
             InitializePuzzlePieces();
         }
 
-        private List<PentominoeGameBoardLocation> getAllBoardLocations()
+       
+
+        public bool UndoLastPlay()
         {
-           List<PentominoeGameBoardLocation> allLocations = new List<PentominoeGameBoardLocation>();
+            if (playStack == null || playStack.Count == 0) return false;
+            HashSet<PentominoeGameBoardLocation> lastPlay = playStack.Pop();
+            IPentominoePuzzlePiece piece = lastPlay.First().CoveredPiece;
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            foreach (PentominoeGameBoardLocation loc in lastPlay)
+            {
+                //why is this updating my loc value also?
+                PentominoeGameBoardLocation boardLocation = gameBoard[loc.Yindex, loc.Xindex];
+                boardLocation.Covered = false;
+                boardLocation.CoveredPiece = null;
+                boardLocation.CoveredUnit = -1;
+
+            }
+
+
+
+            return true;
+        }
+
+        private List<PentominoeGameBoardLocation> getAllBoardLocations(bool excludeCovered = false)
+        {
+            List<PentominoeGameBoardLocation> allLocations = new List<PentominoeGameBoardLocation>();
             for (int i = 0; i < boardHeight; i++)
             {
                 for (int j = 0; j < boardWidth; j++)
                 {
-                    allLocations.Add(gameBoard[i, j]);
+                    if (!excludeCovered  || (excludeCovered && !gameBoard[i,j].Covered))
+                        allLocations.Add(gameBoard[i, j]);
                 }
             }
 
@@ -763,7 +789,7 @@ namespace myFirstAzureWebApp.Models
         private PentominoeGameBoardLocation getBoardLocation(int xIndex, int yIndex)
         {
             PentominoeGameBoardLocation loc = null;
-            if (xIndex >=0 && xIndex < boardWidth && yIndex >=0 &&  yIndex < boardHeight)
+            if (xIndex >= 0 && xIndex < boardWidth && yIndex >= 0 && yIndex < boardHeight)
             {
                 loc = gameBoard[yIndex, xIndex];
             }
@@ -777,12 +803,12 @@ namespace myFirstAzureWebApp.Models
             for (int i = 0; i < boardHeight; i++)
             {
                 board[i] = new string[boardWidth];
-                for (int j = 0; j<boardWidth; j++)
+                for (int j = 0; j < boardWidth; j++)
                 {
-                    PentominoeGameBoardLocation loc = gameBoard[i,j];
+                    PentominoeGameBoardLocation loc = gameBoard[i, j];
                     if (loc.Covered)
                         board[i][j] = loc.CoveredPiece.pieceName();
-                   
+
                 }
             }
             return board;
@@ -794,22 +820,22 @@ namespace myFirstAzureWebApp.Models
             if (pieceName != null && unUsedPieces.ContainsKey(pieceName)) return unUsedPieces[pieceName];
 
             return null;
-           
+
 
         }
 
-        public bool PlacePiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
+        public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
         {
             if (piece == null) return false;
 
             HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>();
             bool ret = false;
             for (int i = 0; i < 5; i++)
-            {   
-               foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
+            {
+                foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
                 {
                     locationsCovered.Clear();
-                    Trace.WriteLine("CHECKING "+ piece.pieceName() + " unit " + i);
+                    Trace.WriteLine("CHECKING " + piece.pieceName() + " unit " + i);
                     ret = DoesUnitPieceCoverLocation(piece, i, xIndex, yIndex, locationsCovered, null, orientation);
                     if (ret && !checkSolvable) break;
                     else if (ret && checkSolvable && IsBoardPlayable()) break;
@@ -817,20 +843,28 @@ namespace myFirstAzureWebApp.Models
                 if (ret) break;
             }
 
-            if (ret)
+            if (ret && commitPlay)
             {
+                if (playStack == null)
+                {
+                    playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
+                }
+
+                playStack.Push(locationsCovered);
+
                 unUsedPieces.Remove(piece.pieceName());
                 foreach (PentominoeGameBoardLocation loc in locationsCovered)
                 {
                     gameBoard[loc.Yindex, loc.Xindex] = loc;
                 }
+
             }
-            
-            
+
+
             return ret;
         }
 
-        private bool DoesUnitPieceCoverLocation(IPentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int>unitsPlaced, TransformOrientations orientation)
+        private bool DoesUnitPieceCoverLocation(IPentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
         {
             PentominoeGameBoardLocation location;
             if (updatedLocations == null) return false;
@@ -860,7 +894,7 @@ namespace myFirstAzureWebApp.Models
             l.CoveredPiece = piece;
             l.CoveredUnit = unitNumber;
             updatedLocations.Add(l);
-  
+
             bool ret = true;
 
 
@@ -877,7 +911,7 @@ namespace myFirstAzureWebApp.Models
 
             return ret;
 
-        } 
+        }
 
         public void InitializePuzzlePieces()
         {
@@ -948,13 +982,13 @@ namespace myFirstAzureWebApp.Models
 
             HashSet<PentominoeGameBoardLocation> uncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
             HashSet<PentominoeGameBoardLocation> coveredLocations = new HashSet<PentominoeGameBoardLocation>();
-    
-           foreach (PentominoeGameBoardLocation loc in getAllBoardLocations())
+
+            foreach (PentominoeGameBoardLocation loc in getAllBoardLocations())
             {
                 if (!loc.Covered && !uncoveredLocations.Contains(loc))
                 {
                     uncoveredLocations.Add(loc);
-                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex  + " is NOT covered");
+                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex + " is NOT covered");
 
                     HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
                     contiguousUncoveredLocations.Add(loc);
@@ -964,7 +998,7 @@ namespace myFirstAzureWebApp.Models
                     }
                     else
                     {
-                        if (contiguousUncoveredLocations.Count%5 != 0)
+                        if (contiguousUncoveredLocations.Count % 5 != 0)
                         {
                             return false;
                         }
@@ -973,7 +1007,7 @@ namespace myFirstAzureWebApp.Models
                             uncoveredLocations.Union(contiguousUncoveredLocations);
                         }
                     }
-                        
+
                 }
                 else if (loc.Covered)
                 {
@@ -982,10 +1016,16 @@ namespace myFirstAzureWebApp.Models
                 }
             }
 
+           /* foreach (IPentominoePuzzlePiece piece in unUsedPieces.Values)
+            {
+                if (!isPiecePlayable(piece))
+                    return false;
+            }*/
+
             return true;
         }
 
-        private bool getEmptyAdjacents (PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
+        private bool getEmptyAdjacents(PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
         {
             if (emptyAdjacents == null)
             {
@@ -993,10 +1033,10 @@ namespace myFirstAzureWebApp.Models
             }
 
             PentominoeGameBoardLocation loc = getBoardLocation(location.Xindex + 1, location.Yindex);
-            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc)) 
+            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc))
             {
-                    emptyAdjacents.Add(loc);
-                    getEmptyAdjacents(loc, emptyAdjacents);
+                emptyAdjacents.Add(loc);
+                getEmptyAdjacents(loc, emptyAdjacents);
             }
 
             loc = getBoardLocation(location.Xindex - 1, location.Yindex);
@@ -1026,27 +1066,114 @@ namespace myFirstAzureWebApp.Models
                 return false;
         }
 
+
+        private bool isPiecePlayable(IPentominoePuzzlePiece piece)
+        {
+            if (piece == null) return false;
+            bool ret = false;
+
+            List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
+            
+            foreach (PentominoeGameBoardLocation loc in allUncoveredLocations)
+            {
+                if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, false))
+                {
+                    ret = true;
+                    break;
+                }
+
+            }
+            return ret;
+
+        }
+
+       public void solveBoardPieceByPiece()
+        {
+           
+                List<string> pieceNames = unUsedPieces.Keys.ToList();
+                foreach (string pieceName in pieceNames)
+                {
+                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
+                    List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
+                    int index = 0;
+                    while (piece != null && index < allUncoveredLocations.Count)
+                    {
+                        PentominoeGameBoardLocation loc = allUncoveredLocations[index];
+                        if (PlayPiece(piece, loc.Xindex, loc.Yindex))
+                        {
+                            if (IsBoardPlayable())
+                                break;
+                            else
+                                UndoLastPlay();
+
+                        }
+                        index++;
+                    }
+
+                    if (ChoosePiece(pieceName) != null)
+                    {
+                        UndoLastPlay();
+                    }
+
+            }
+
+
+        }
+
         //I'll need to use stack here to keep track of plays so I can back track.
         public void solveBoard()
         {
             List<string> pieceNames = unUsedPieces.Keys.ToList();
+            
 
-            for (int i = 0; i < boardHeight; i++)
+            List<PentominoeGameBoardLocation> allLocations = getAllBoardLocations();
+            int index = 0;
+            while (unUsedPieces.Count > 0 && index < allLocations.Count)
             {
-                for (int j = 0; j<boardWidth; j++)
+                PentominoeGameBoardLocation loc = allLocations[index];
+
+                if (loc.Covered) break;
+                foreach (string pieceName in pieceNames)
                 {
-                    bool ret = false;
-                    foreach (string pieceName in pieceNames)
+                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
+                    if (PlayPiece(piece, loc.Xindex, loc.Yindex))
                     {
-                        IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
-                        ret = PlacePiece(piece, j, i);
-                        if (ret) break;
-
+                        if (!IsBoardPlayable())
+                            UndoLastPlay();
+                        else break;
                     }
-                }
-            }
-        }
-    }
 
-    
+                }
+
+                if (loc.Covered)
+                {
+                    index++;
+                }
+                else
+                {
+                    UndoLastPlay();
+                }
+
+            }
+
+          /*  foreach (PentominoeGameBoardLocation loc in allLocations)
+            {
+                if (loc.Covered) break;
+                foreach (string pieceName in pieceNames)
+                {
+                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
+                    if (PlacePiece(piece, loc.Xindex, loc.Yindex))
+                    {
+                        if (!IsBoardPlayable())
+                            UndoLastPlay();
+                        else break;
+                    }
+
+                }
+
+            }*/
+
+        }
+
+    }   
 }
