@@ -127,6 +127,7 @@ function getRandomIntInclusive(min, max) {
 var two;
 var colors = ["red", "blue", "green", "magenta", "brown"];
 var window_width = 20;
+var colorDictionary = {"I": "blue", "F":"green", "Y":"yellow", "V":"red", "T":"brown", "X":"darkblue", "Z":"gray", "U":"lime", "N":"cyan", "P":"pink", "L":"orange", "W":"purple"};
 
 function initalizeTwo() {
     var elem = document.getElementById('myCanvas');
@@ -184,7 +185,8 @@ function drawGameBoard(b, squareLength) {
             var rect = two.makeRectangle(xIndex, yIndex, squareLength, squareLength);
             rect.stroke = "blue";
             var color = "black";
-            if (board[i][j] == null) color = "white"; 
+            if (board[i][j] == null) color = "white"
+            else color = colorDictionary[board[i][j]];
             rect.fill = color;
             two.update();
             xIndex += squareLength;

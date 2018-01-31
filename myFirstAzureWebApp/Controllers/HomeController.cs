@@ -43,12 +43,18 @@ namespace myFirstAzureWebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult TwoJs(string PuzzlePiece, int xLocation, int yLocation)
+        public ActionResult TwoJs(string PuzzlePiece, int xLocation = 0, int yLocation = 0)
         {
             PentominoeGameBoard board =(PentominoeGameBoard) Session["Board"];
 
-            IPentominoePuzzlePiece piece = board.ChoosePiece(PuzzlePiece);
-            bool ret = board.PlacePiece(piece, xLocation, yLocation);
+            if (PuzzlePiece != "")
+            {
+                IPentominoePuzzlePiece piece = board.ChoosePiece(PuzzlePiece);
+                bool ret = board.PlacePiece(piece, xLocation, yLocation);
+            }
+            else
+                board.solveBoard();
+
             return View(Json(board.GetBoard()));
         }
 

@@ -9,7 +9,7 @@ namespace myFirstAzureWebApp.Models
 {
 
     public enum LocationNames { ABOVE_LEFT, ABOVE_CENTER, ABOVE_RIGHT, LEFT, RIGHT, BELOW_LEFT, BELOW_CENTER, BELOW_RIGHT };
-    public enum TransformOrientations { DEFAULT , ROTATE_90_CLOCKWISE};
+    public enum TransformOrientations { DEFAULT , ROTATE_90_COUNTER_CLOCKWISE, ROTATE_90_CLOCKWISE, MIRROR_LEFT, MIRROR_DOWN, ROTATE_180, ROTATE_90_COUNTER_MIRROR_DOWN, ROTATE_90_CLOCK_MIRROR_DOWN};
 
  
 
@@ -618,14 +618,35 @@ namespace myFirstAzureWebApp.Models
 
             switch (orientation)
             {
+                case TransformOrientations.ROTATE_90_COUNTER_CLOCKWISE:
+                    transformCounterClockwise90();
+                    break;
                 case TransformOrientations.ROTATE_90_CLOCKWISE:
                     transformClockwise90();
+                    break;
+                case TransformOrientations.MIRROR_LEFT:
+                    transformMirrorLeft();
+                    break;
+                case TransformOrientations.MIRROR_DOWN:
+                    transformMirrorDown();
+                    break;
+                case TransformOrientations.ROTATE_180:
+                    transformMirrorDown();
+                    transformMirrorLeft();
+                    break;
+                case TransformOrientations.ROTATE_90_COUNTER_MIRROR_DOWN:
+                    transformCounterClockwise90();
+                    transformMirrorDown();
+                    break;
+                case TransformOrientations.ROTATE_90_CLOCK_MIRROR_DOWN:
+                    transformClockwise90();
+                    transformMirrorDown();
                     break;
             }
 
         }
 
-        private void transformClockwise90()
+        private void transformCounterClockwise90()
         {
             int newXOffset = yOffSet;
             int newYOffset = -xOffSet;
@@ -633,6 +654,33 @@ namespace myFirstAzureWebApp.Models
             xOffSet = newXOffset;
             yOffSet = newYOffset;
 
+        }
+
+        private void transformClockwise90()
+        {
+            int newXOffset = -yOffSet;
+            int newYOffset = xOffSet;
+
+            xOffSet = newXOffset;
+            yOffSet = newYOffset;
+        }
+
+        private void transformMirrorLeft()
+        {
+            int newXOffset = -xOffSet;
+            int newYOffset = yOffSet;
+
+            xOffSet = newXOffset;
+            yOffSet = newYOffset;
+        }
+
+        private void transformMirrorDown()
+        {
+            int newXOffset = xOffSet;
+            int newYOffset = -yOffSet;
+
+            xOffSet = newXOffset;
+            yOffSet = newYOffset;
         }
     }
 
@@ -677,21 +725,49 @@ namespace myFirstAzureWebApp.Models
     {
        private PentominoeGameBoardLocation[,] gameBoard;
        private Dictionary<string, IPentominoePuzzlePiece> unUsedPieces;
+        
        private int boardHeight = 6;
        private int boardWidth = 10;
 
         public PentominoeGameBoard()
         {
-            gameBoard = new PentominoeGameBoardLocation[boardWidth, boardHeight];
-            for (int i = 0; i< boardWidth; i++)
+            gameBoard = new PentominoeGameBoardLocation[boardHeight, boardWidth];
+            
+            for (int i = 0; i< boardHeight; i++)
             {
-                for (int j = 0; j< boardHeight; j++)
+                for (int j = 0; j< boardWidth; j++)
                 {
-                    gameBoard[i, j] = new PentominoeGameBoardLocation(i,j);
+                    PentominoeGameBoardLocation loc = new PentominoeGameBoardLocation(j,i);
+                    gameBoard[i, j] = loc;
                 }
             }
 
             InitializePuzzlePieces();
+        }
+
+        private List<PentominoeGameBoardLocation> getAllBoardLocations()
+        {
+           List<PentominoeGameBoardLocation> allLocations = new List<PentominoeGameBoardLocation>();
+            for (int i = 0; i < boardHeight; i++)
+            {
+                for (int j = 0; j < boardWidth; j++)
+                {
+                    allLocations.Add(gameBoard[i, j]);
+                }
+            }
+
+            return allLocations;
+
+        }
+
+        private PentominoeGameBoardLocation getBoardLocation(int xIndex, int yIndex)
+        {
+            PentominoeGameBoardLocation loc = null;
+            if (xIndex >=0 && xIndex < boardWidth && yIndex >=0 &&  yIndex < boardHeight)
+            {
+                loc = gameBoard[yIndex, xIndex];
+            }
+            return loc;
         }
 
 
@@ -703,7 +779,7 @@ namespace myFirstAzureWebApp.Models
                 board[i] = new string[boardWidth];
                 for (int j = 0; j<boardWidth; j++)
                 {
-                    PentominoeGameBoardLocation loc = gameBoard[j,i];
+                    PentominoeGameBoardLocation loc = gameBoard[i,j];
                     if (loc.Covered)
                         board[i][j] = loc.CoveredPiece.pieceName();
                    
@@ -715,26 +791,38 @@ namespace myFirstAzureWebApp.Models
         public IPentominoePuzzlePiece ChoosePiece(string pieceName)
         {
             if (unUsedPieces == null) return null;
-            if (pieceName != null) return unUsedPieces[pieceName];
+            if (pieceName != null && unUsedPieces.ContainsKey(pieceName)) return unUsedPieces[pieceName];
 
             return null;
            
 
         }
 
-        public bool PlacePiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex)
+        public bool PlacePiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
         {
+            if (piece == null) return false;
+
             HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>();
-            bool ret =  DoesUnitPieceCoverLocation(piece, 0, xIndex, yIndex, locationsCovered, null, TransformOrientations.DEFAULT);
-            if (!ret)
-            {
-                ret = DoesUnitPieceCoverLocation(piece, 0, xIndex, yIndex, locationsCovered, null, TransformOrientations.ROTATE_90_CLOCKWISE);
+            bool ret = false;
+            for (int i = 0; i < 5; i++)
+            {   
+               foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
+                {
+                    locationsCovered.Clear();
+                    Trace.WriteLine("CHECKING "+ piece.pieceName() + " unit " + i);
+                    ret = DoesUnitPieceCoverLocation(piece, i, xIndex, yIndex, locationsCovered, null, orientation);
+                    if (ret && !checkSolvable) break;
+                    else if (ret && checkSolvable && IsBoardPlayable()) break;
+                }
+                if (ret) break;
             }
+
             if (ret)
             {
+                unUsedPieces.Remove(piece.pieceName());
                 foreach (PentominoeGameBoardLocation loc in locationsCovered)
                 {
-                    gameBoard[loc.Xindex, loc.Yindex] = loc;
+                    gameBoard[loc.Yindex, loc.Xindex] = loc;
                 }
             }
             
@@ -755,7 +843,7 @@ namespace myFirstAzureWebApp.Models
                 Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "OUT OF BOUNDS");
                 return false;
             }
-            location = gameBoard[xIndex, yIndex];
+            location = gameBoard[yIndex, xIndex];
             if (location.Covered)
             {
                 Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "ALREADY COVERED");
@@ -790,8 +878,6 @@ namespace myFirstAzureWebApp.Models
             return ret;
 
         } 
-
-      
 
         public void InitializePuzzlePieces()
         {
@@ -851,6 +937,114 @@ namespace myFirstAzureWebApp.Models
             unUsedPieces.Add(new PentominoePuzzlePiece("Z"));
             */
 
+        }
+
+        public bool IsBoardPlayable()
+        {
+
+            Trace.WriteLine("IS BOARD PLAYABLE");
+            //each contiguous block has at least 5 units
+            //count number of contiguous blocks and see that each is divisible by 5
+
+            HashSet<PentominoeGameBoardLocation> uncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
+            HashSet<PentominoeGameBoardLocation> coveredLocations = new HashSet<PentominoeGameBoardLocation>();
+    
+           foreach (PentominoeGameBoardLocation loc in getAllBoardLocations())
+            {
+                if (!loc.Covered && !uncoveredLocations.Contains(loc))
+                {
+                    uncoveredLocations.Add(loc);
+                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex  + " is NOT covered");
+
+                    HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
+                    contiguousUncoveredLocations.Add(loc);
+                    if (!getEmptyAdjacents(loc, contiguousUncoveredLocations))
+                    {
+                        return false;  //single uncovered location
+                    }
+                    else
+                    {
+                        if (contiguousUncoveredLocations.Count%5 != 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            uncoveredLocations.Union(contiguousUncoveredLocations);
+                        }
+                    }
+                        
+                }
+                else if (loc.Covered)
+                {
+                    coveredLocations.Add(loc);
+                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex + " is covered");
+                }
+            }
+
+            return true;
+        }
+
+        private bool getEmptyAdjacents (PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
+        {
+            if (emptyAdjacents == null)
+            {
+                emptyAdjacents = new HashSet<PentominoeGameBoardLocation>();
+            }
+
+            PentominoeGameBoardLocation loc = getBoardLocation(location.Xindex + 1, location.Yindex);
+            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc)) 
+            {
+                    emptyAdjacents.Add(loc);
+                    getEmptyAdjacents(loc, emptyAdjacents);
+            }
+
+            loc = getBoardLocation(location.Xindex - 1, location.Yindex);
+            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc))
+            {
+                emptyAdjacents.Add(loc);
+                getEmptyAdjacents(loc, emptyAdjacents);
+            }
+
+            loc = getBoardLocation(location.Xindex, location.Yindex + 1);
+            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc))
+            {
+                emptyAdjacents.Add(loc);
+                getEmptyAdjacents(loc, emptyAdjacents);
+            }
+
+            loc = getBoardLocation(location.Xindex, location.Yindex - 1);
+            if (loc != null && !loc.Covered && !emptyAdjacents.Contains(loc))
+            {
+                emptyAdjacents.Add(loc);
+                getEmptyAdjacents(loc, emptyAdjacents);
+            }
+
+            if (emptyAdjacents.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        //I'll need to use stack here to keep track of plays so I can back track.
+        public void solveBoard()
+        {
+            List<string> pieceNames = unUsedPieces.Keys.ToList();
+
+            for (int i = 0; i < boardHeight; i++)
+            {
+                for (int j = 0; j<boardWidth; j++)
+                {
+                    bool ret = false;
+                    foreach (string pieceName in pieceNames)
+                    {
+                        IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
+                        ret = PlacePiece(piece, j, i);
+                        if (ret) break;
+
+                    }
+                }
+            }
         }
     }
 
