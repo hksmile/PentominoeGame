@@ -690,6 +690,7 @@ namespace myFirstAzureWebApp.Models
         public bool Covered { get { return covered; } set { covered = value; } }
 
         private IPentominoePuzzlePiece coveredPiece;
+        //pieces don't change.. thing about making this a singleton or something
         public IPentominoePuzzlePiece CoveredPiece { get { return coveredPiece; } set { coveredPiece = value; } }
 
         private int coveredUnit;
@@ -705,6 +706,15 @@ namespace myFirstAzureWebApp.Models
         {
             xIndex = x;
             yIndex = y;
+        }
+
+        public PentominoeGameBoardLocation(PentominoeGameBoardLocation loc)
+        {
+            xIndex = loc.xIndex;
+            yIndex = loc.yIndex;
+            covered = loc.covered;
+            coveredPiece = loc.coveredPiece;
+            coveredUnit = loc.coveredUnit;
         }
     
     }
@@ -827,8 +837,9 @@ namespace myFirstAzureWebApp.Models
         public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
         {
             if (piece == null) return false;
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
 
-            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>();
+            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
             bool ret = false;
             for (int i = 0; i < 5; i++)
             {
@@ -980,19 +991,26 @@ namespace myFirstAzureWebApp.Models
             //each contiguous block has at least 5 units
             //count number of contiguous blocks and see that each is divisible by 5
 
-            HashSet<PentominoeGameBoardLocation> uncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
-            HashSet<PentominoeGameBoardLocation> coveredLocations = new HashSet<PentominoeGameBoardLocation>();
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
 
-            foreach (PentominoeGameBoardLocation loc in getAllBoardLocations())
+            HashSet<PentominoeGameBoardLocation> checkedLocation = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+
+            List<PentominoeGameBoardLocation> uncoveredLocations = getAllBoardLocations(true);
+            int totalUncovered = uncoveredLocations.Count;
+
+
+            foreach (PentominoeGameBoardLocation loc in uncoveredLocations)
             {
-                if (!loc.Covered && !uncoveredLocations.Contains(loc))
-                {
-                    uncoveredLocations.Add(loc);
-                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex + " is NOT covered");
+                PentominoeGameBoardLocation tempLoc = new PentominoeGameBoardLocation(loc);
+                if (checkedLocation.Count == totalUncovered) break;
 
-                    HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>();
-                    contiguousUncoveredLocations.Add(loc);
-                    if (!getEmptyAdjacents(loc, contiguousUncoveredLocations))
+                if (!checkedLocation.Contains(tempLoc))
+                {
+                    checkedLocation.Add(tempLoc);
+                    
+                    HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+                    contiguousUncoveredLocations.Add(tempLoc);
+                    if (!getEmptyAdjacents(tempLoc, contiguousUncoveredLocations))
                     {
                         return false;  //single uncovered location
                     }
@@ -1004,15 +1022,10 @@ namespace myFirstAzureWebApp.Models
                         }
                         else
                         {
-                            uncoveredLocations.Union(contiguousUncoveredLocations);
+                            checkedLocation.Union(contiguousUncoveredLocations);
                         }
                     }
 
-                }
-                else if (loc.Covered)
-                {
-                    coveredLocations.Add(loc);
-                    Trace.WriteLine("Location " + loc.Xindex + "," + loc.Yindex + " is covered");
                 }
             }
 
@@ -1028,8 +1041,10 @@ namespace myFirstAzureWebApp.Models
         private bool getEmptyAdjacents(PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
         {
             if (emptyAdjacents == null)
+
             {
-                emptyAdjacents = new HashSet<PentominoeGameBoardLocation>();
+                PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
+                emptyAdjacents = new HashSet<PentominoeGameBoardLocation>(locationComparer);
             }
 
             PentominoeGameBoardLocation loc = getBoardLocation(location.Xindex + 1, location.Yindex);
@@ -1109,12 +1124,11 @@ namespace myFirstAzureWebApp.Models
                         }
                         index++;
                     }
+                }
 
-                    if (ChoosePiece(pieceName) != null)
-                    {
-                        UndoLastPlay();
-                    }
-
+                if (unUsedPieces.Count > 0 && unUsedPieces.Count != pieceNames.Count)
+            {
+                solveBoardPieceByPiece();
             }
 
 

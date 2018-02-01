@@ -253,6 +253,7 @@ namespace PentominoeModelTests
             PentominoeGameBoard board = new PentominoeGameBoard();
             board.solveBoardPieceByPiece();
             string[][] myBoard = board.GetBoard();
+            
         }
 
         [TestMethod]

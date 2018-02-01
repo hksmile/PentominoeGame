@@ -53,7 +53,7 @@ namespace myFirstAzureWebApp.Controllers
                 bool ret = board.PlayPiece(piece, xLocation, yLocation);
             }
             else
-                board.solveBoard();
+                board.solveBoardPieceByPiece();
 
             return View(Json(board.GetBoard()));
         }
