@@ -247,14 +247,15 @@ namespace PentominoeModelTests
             Assert.IsTrue(ret);
         }
 
-        [TestMethod]
+       /* [TestMethod]
+       
         public void SolveBoard()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
             board.solveBoardPieceByPiece();
             string[][] myBoard = board.GetBoard();
             
-        }
+        }*/
 
         [TestMethod]
         public void BoardIsPlayableEmpty()

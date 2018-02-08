@@ -11,12 +11,15 @@ namespace myFirstAzureWebApp.Models
     public enum LocationNames { ABOVE_LEFT, ABOVE_CENTER, ABOVE_RIGHT, LEFT, RIGHT, BELOW_LEFT, BELOW_CENTER, BELOW_RIGHT };
     public enum TransformOrientations { DEFAULT , ROTATE_90_COUNTER_CLOCKWISE, ROTATE_90_CLOCKWISE, MIRROR_LEFT, MIRROR_DOWN, ROTATE_180, ROTATE_90_COUNTER_MIRROR_DOWN, ROTATE_90_CLOCK_MIRROR_DOWN};
 
- 
 
+    //this should probably be an abstract base class... 
     public interface IPentominoePuzzlePiece
     {
          PentominoePuzzleUnit[] getUnits(TransformOrientations orientation);
          string pieceName();
+        int Length();
+        int Width();
+
     }
 
    
@@ -82,6 +85,7 @@ namespace myFirstAzureWebApp.Models
             return null;
         }
     }
+
     public class PieceF : IPentominoePuzzlePiece
     {
         public string pieceName()
@@ -97,8 +101,14 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, -1, 0, -1, -1, 3, -1, 4, -1);
             units[3] = new PentominoePuzzleUnit(3, 0, 1, -1, 2, -1, 4, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, 3, -1, 2, -1, -1, -1, -1, -1);
-
-
+        }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
         }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
@@ -137,6 +147,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
+        }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
@@ -174,6 +192,15 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+
+        public int Length()
+        {
+            return 4;
+        }
+        public int Width()
+        {
+            return 2;
+        }
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
 
@@ -209,6 +236,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 2;
+        }
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
 
@@ -243,6 +278,14 @@ namespace myFirstAzureWebApp.Models
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
 
 
+        }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
         }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
@@ -281,6 +324,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 5;
+        }
+        public int Width()
+        {
+            return 1;
+        }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
@@ -318,6 +369,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 2;
+        }
+        public int Width()
+        {
+            return 3;
+        }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
@@ -353,6 +412,14 @@ namespace myFirstAzureWebApp.Models
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
 
 
+        }
+        public int Length()
+        {
+            return 4;
+        }
+        public int Width()
+        {
+            return 2;
         }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
@@ -390,6 +457,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
+        }
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
 
@@ -424,6 +499,14 @@ namespace myFirstAzureWebApp.Models
             units[4] = new PentominoePuzzleUnit(4,2, 3, 1, -1, -1, -1, -1, -1);
             
             
+        }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
         }
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
@@ -460,6 +543,14 @@ namespace myFirstAzureWebApp.Models
 
 
         }
+        public int Length()
+        {
+            return 4;
+        }
+        public int Width()
+        {
+            return 2;
+        }
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
         {
 
@@ -495,6 +586,14 @@ namespace myFirstAzureWebApp.Models
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, -1, 4, -1, -1, -1);
 
 
+        }
+        public int Length()
+        {
+            return 3;
+        }
+        public int Width()
+        {
+            return 3;
         }
 
         public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
@@ -1026,6 +1125,15 @@ namespace myFirstAzureWebApp.Models
                         }
                     }
 
+                    bool couldAnyPieceFit = false;
+                    //if you're left with continguous space that no unUsed pieces could fit into then the board is not playable.
+                    foreach(IPentominoePuzzlePiece piece in unUsedPieces.Values)
+                    {
+                        couldAnyPieceFit = couldPieceFit(piece, contiguousUncoveredLocations);
+                        if (couldAnyPieceFit) break;
+                    }
+                    if (!couldAnyPieceFit) return false;
+
                 }
             }
 
@@ -1036,6 +1144,28 @@ namespace myFirstAzureWebApp.Models
             }*/
 
             return true;
+        }
+
+        private bool couldPieceFit (IPentominoePuzzlePiece piece, HashSet<PentominoeGameBoardLocation> contiguousLocations)
+        {
+            bool ret = false;
+            //determine size of continguous location
+            int xMax=0, xMin=0, yMax=0, yMin = 0;
+            foreach (PentominoeGameBoardLocation loc in contiguousLocations)
+            {
+                if (loc.Xindex > xMax) xMax = loc.Xindex;
+                if (loc.Xindex < xMin) xMin = loc.Xindex;
+
+                if (loc.Yindex > yMax) yMax = loc.Yindex;
+                if (loc.Yindex < yMin) yMin = loc.Yindex;
+            }
+
+            int xLength = xMax - xMin + 1;
+            int yLength = yMax - yMin + 1;
+
+            if ((piece.Length() <= xLength && piece.Width() <= yLength) || (piece.Length() <= yLength && piece.Width() <= xLength)) ret = true;
+
+            return ret;
         }
 
         private bool getEmptyAdjacents(PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
@@ -1104,10 +1234,17 @@ namespace myFirstAzureWebApp.Models
 
        public void solveBoardPieceByPiece()
         {
-           
-                List<string> pieceNames = unUsedPieces.Keys.ToList();
-                foreach (string pieceName in pieceNames)
-                {
+            int countUnusedPieces = unUsedPieces.Count;
+            if (countUnusedPieces == 0) return;
+
+            string[] pieceNames = unUsedPieces.Keys.ToArray();
+            Random rnd = new Random();
+            
+
+            while (unUsedPieces.Count > 0)
+            {
+                    int randomIndex = rnd.Next(0, pieceNames.Length);
+                    string pieceName = pieceNames[randomIndex];
                     IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;
@@ -1124,13 +1261,12 @@ namespace myFirstAzureWebApp.Models
                         }
                         index++;
                     }
-                }
 
-                if (unUsedPieces.Count > 0 && unUsedPieces.Count != pieceNames.Count)
-            {
-                solveBoardPieceByPiece();
+                    if (index > allUncoveredLocations.Count)
+                    {
+                        UndoLastPlay();
+                    }
             }
-
 
         }
 
