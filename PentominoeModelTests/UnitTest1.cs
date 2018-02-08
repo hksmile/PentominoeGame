@@ -360,6 +360,30 @@ namespace PentominoeModelTests
             Assert.IsTrue(ret);
 
         }
+        [TestMethod]
+        public void TestPieceUPieceXPlacement()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            bool ret = board.PlayPiece(piece, 1, 1);
+            Assert.IsTrue(ret);
+            piece = board.ChoosePiece("U");
+            ret = board.PlayPiece(piece, 0, 0);
+            Assert.IsTrue(ret);
+
+            string[][] b = board.GetBoard();
+            Assert.AreEqual(b[0][0], "U");
+            Assert.AreEqual(b[0][1], "U");
+            Assert.AreEqual(b[0][2], "X");
+            Assert.AreEqual(b[1][0], "U");
+            Assert.AreEqual(b[1][1], "X");
+            Assert.AreEqual(b[1][2], "X");
+            Assert.AreEqual(b[1][3], "X");
+            Assert.AreEqual(b[2][0], "U");
+            Assert.AreEqual(b[2][1], "U");
+            Assert.AreEqual(b[2][2], "X");
+
+        }
 
 
 

@@ -62,14 +62,8 @@ namespace myFirstAzureWebApp.Controllers
         {
             ViewBag.Message = "Your TwoJs Play Page";
 
-            PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("Z");
-            bool ret = board.PlayPiece(piece, 1, 5);
-            string[][] b = board.GetBoard();
-
-            ViewBag.Board = Json(b);
-
-            return View();
+            PentominoeGameBoard board = (PentominoeGameBoard)Session["Board"];
+            return Json(board.GetBoard(), JsonRequestBehavior.AllowGet);
         }
     }
 }

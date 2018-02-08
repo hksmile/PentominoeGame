@@ -362,9 +362,9 @@ namespace myFirstAzureWebApp.Models
         public PieceU()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, 2);
-            units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, 2, -1, -1, -1);
-            units[2] = new PentominoePuzzleUnit(2, -1, 1, 0, 1, 3, -1, -1, -1);
-            units[3] = new PentominoePuzzleUnit(3, 4, -1, -1, 2, -1, -1, -1, -1);
+            units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, 2, -1, -1, -1, -1);
+            units[2] = new PentominoePuzzleUnit(2, -1, 0, 4, 3, 1, -1, -1, -1);
+            units[3] = new PentominoePuzzleUnit(3, 4, -1, -1, -1, 2, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, -1, -1, 3, 2, -1);
 
 
@@ -988,7 +988,7 @@ namespace myFirstAzureWebApp.Models
                 return false;
             }
             location = gameBoard[yIndex, xIndex];
-            if (location.Covered)
+            if (location.Covered || updatedLocations.Contains(location))
             {
                 Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "ALREADY COVERED");
                 return false;
