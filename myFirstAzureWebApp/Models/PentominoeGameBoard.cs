@@ -874,6 +874,8 @@ namespace myFirstAzureWebApp.Models
 
             }
 
+            Trace.WriteLine("Removed piece " + piece.pieceName());
+
 
 
             return true;
@@ -957,10 +959,19 @@ namespace myFirstAzureWebApp.Models
                     gameBoard[loc.Yindex, loc.Xindex] = loc;
                 }
 
+                Trace.WriteLine("Pushed Piece " + piece.pieceName() + " unit " + locationsCovered.First().CoveredUnit + " into " + locationsCovered.First().Xindex + "," + locationsCovered.First().Yindex + " at orienation " + orientation.ToString());
+                if (!IsBoardPlayable())
+                {
+                    UndoLastPlay();
+                    ret = false;
+                }
             }
 
             return ret;
         }
+
+
+        //can't ask if playable until I've committed to covereing
 
         public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
         {
@@ -969,36 +980,48 @@ namespace myFirstAzureWebApp.Models
 
             HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
             bool ret = false;
-            for (int i = 0; i < 5; i++)
-            {
+            string orientString = "";
+           
                 foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
                 {
+                orientString = orientation.ToString();
+                Trace.WriteLine("Checking Transformation " + orientString);
+                for (int i = 0; i < 5; i++)
+                {
+                   
                     locationsCovered.Clear();
-                    Trace.WriteLine("CHECKING " + piece.pieceName() + " unit " + i);
+                    //Trace.WriteLine("CHECKING " + piece.pieceName() + " unit " + i);
                     ret = DoesUnitPieceCoverLocation(piece, i, xIndex, yIndex, locationsCovered, null, orientation);
-                    if (ret && !checkSolvable) break;
-                    else if (ret && checkSolvable && IsBoardPlayable()) break;
+
+                    if (ret)
+                    {
+                        if (playStack == null)
+                        {
+                            playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
+                        }
+
+                        playStack.Push(locationsCovered);
+
+                        unUsedPieces.Remove(piece.pieceName());
+                        foreach (PentominoeGameBoardLocation loc in locationsCovered)
+                        {
+                            gameBoard[loc.Yindex, loc.Xindex] = loc;
+                        }
+
+                        Trace.WriteLine("Pushed Piece " + piece.pieceName() + " unit " + locationsCovered.First().CoveredUnit + " into " + locationsCovered.First().Xindex + "," + locationsCovered.First().Yindex + " at orienation " + orientString);
+                        if (checkSolvable && !IsBoardPlayable())
+                        {
+                            UndoLastPlay();
+                            ret = false;
+                        }
+                        else if (!commitPlay) UndoLastPlay();
+                    }
+                    if (ret) break;
                 }
                 if (ret) break;
             }
 
-            if (ret && commitPlay)
-            {
-                if (playStack == null)
-                {
-                    playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
-                }
-
-                playStack.Push(locationsCovered);
-
-                unUsedPieces.Remove(piece.pieceName());
-                foreach (PentominoeGameBoardLocation loc in locationsCovered)
-                {
-                    gameBoard[loc.Yindex, loc.Xindex] = loc;
-                }
-
-            }
-
+       
 
             return ret;
         }
@@ -1013,13 +1036,13 @@ namespace myFirstAzureWebApp.Models
             //ensure x,y locaiton on the game board and not covered.
             if (xIndex < 0 || yIndex < 0 || xIndex >= boardWidth || yIndex >= boardHeight)
             {
-                Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "OUT OF BOUNDS");
+                //Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "OUT OF BOUNDS");
                 return false;
             }
             location = gameBoard[yIndex, xIndex];
             if (location.Covered || updatedLocations.Contains(location))
             {
-                Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "ALREADY COVERED");
+                //Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + "DOES NOT fit at location " + xIndex + " , " + yIndex + "ALREADY COVERED");
                 return false;
             }
             if (unitsPlaced == null)
@@ -1035,7 +1058,7 @@ namespace myFirstAzureWebApp.Models
             updatedLocations.Add(l);
 
             bool ret = true;
-            Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + " fits " + ret + " at location " + xIndex + " , " + yIndex);
+           // Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + " fits " + ret + " at location " + xIndex + " , " + yIndex);
 
 
             PentominoePuzzleUnit unitSquare = piece.getUnits(orientation)[unitNumber];
@@ -1116,7 +1139,7 @@ namespace myFirstAzureWebApp.Models
         public bool IsBoardPlayable()
         {
 
-            Trace.WriteLine("IS BOARD PLAYABLE");
+           // Trace.WriteLine("IS BOARD PLAYABLE");
             //each contiguous block has at least 5 units
             //count number of contiguous blocks and see that each is divisible by 5
 
@@ -1283,12 +1306,9 @@ namespace myFirstAzureWebApp.Models
                     while (piece != null && index < allUncoveredLocations.Count)
                     {
                         PentominoeGameBoardLocation loc = allUncoveredLocations[index];
-                        if (PlayPiece(piece, loc.Xindex, loc.Yindex))
+                        if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, true))
                         {
-                            if (IsBoardPlayable())
-                                break;
-                            else
-                                UndoLastPlay();
+                            break;
 
                         }
                         index++;
@@ -1318,11 +1338,9 @@ namespace myFirstAzureWebApp.Models
                 foreach (string pieceName in pieceNames)
                 {
                     IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
-                    if (PlayPiece(piece, loc.Xindex, loc.Yindex))
+                    if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, true))
                     {
-                        if (!IsBoardPlayable())
-                            UndoLastPlay();
-                        else break;
+                        break;
                     }
 
                 }

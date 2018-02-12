@@ -494,6 +494,42 @@ namespace PentominoeModelTests
         }
 
         [TestMethod]
+        public void SolveForFourPieces()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceV(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardPieceByPiece();
+
+
+            string[][] b = board.GetBoard();
+            Assert.AreEqual("U", b[5][0]);
+            Assert.AreEqual("X", b[3][0]);
+            Assert.AreEqual("W", b[1][1]);
+            Assert.AreEqual("T", b[1][5]);
+        }
+
+
+
+        [TestMethod]
         public void BoardIsPlayableEmpty()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
