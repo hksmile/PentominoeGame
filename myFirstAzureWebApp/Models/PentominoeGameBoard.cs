@@ -1303,10 +1303,12 @@ namespace myFirstAzureWebApp.Models
                     IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;
+                    bool ret = false;
                     while (piece != null && index < allUncoveredLocations.Count)
                     {
                         PentominoeGameBoardLocation loc = allUncoveredLocations[index];
-                        if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, true))
+                        ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
+                        if (ret)
                         {
                             break;
 
@@ -1314,7 +1316,7 @@ namespace myFirstAzureWebApp.Models
                         index++;
                     }
 
-                    if (index > allUncoveredLocations.Count)
+                    if (!ret)
                     {
                         UndoLastPlay();
                     }

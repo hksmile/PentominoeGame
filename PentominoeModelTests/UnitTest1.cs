@@ -556,7 +556,7 @@ namespace PentominoeModelTests
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("L");
-            ret = board.PlayPiece(piece, 0, 2);
+            ret = board.PlayPiece(piece, 1, 2);
             Assert.IsTrue(ret);
             ret = board.IsBoardPlayable();
             Assert.IsFalse(ret);
@@ -587,7 +587,7 @@ namespace PentominoeModelTests
             ret = board.PlayPiece(piece, 9, 5);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("I");
-            ret = board.PlayPiece(piece, 0, 3);
+            ret = board.PlayPiece(piece, 3, 0);
             Assert.IsTrue(ret);
             ret = board.IsBoardPlayable();
             Assert.IsTrue(ret);
