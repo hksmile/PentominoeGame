@@ -933,6 +933,35 @@ namespace myFirstAzureWebApp.Models
 
         }
 
+        public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
+        {
+            if (piece == null) return false;
+            bool ret = false;
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
+            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+
+            ret = DoesUnitPieceCoverLocation(piece, unitNumber, xIndex, yIndex, locationsCovered, null, orientation);
+
+            if (ret)
+            {
+                if (playStack == null)
+                {
+                    playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
+                }
+
+                playStack.Push(locationsCovered);
+
+                unUsedPieces.Remove(piece.pieceName());
+                foreach (PentominoeGameBoardLocation loc in locationsCovered)
+                {
+                    gameBoard[loc.Yindex, loc.Xindex] = loc;
+                }
+
+            }
+
+            return ret;
+        }
+
         public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
         {
             if (piece == null) return false;
@@ -1006,6 +1035,7 @@ namespace myFirstAzureWebApp.Models
             updatedLocations.Add(l);
 
             bool ret = true;
+            Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + " fits " + ret + " at location " + xIndex + " , " + yIndex);
 
 
             PentominoePuzzleUnit unitSquare = piece.getUnits(orientation)[unitNumber];
@@ -1017,7 +1047,7 @@ namespace myFirstAzureWebApp.Models
                     if (!ret) break;
                 }
             }
-            Trace.WriteLine(piece.pieceName() + " unit " + unitNumber + " fits " + ret + " at location " + xIndex + " , " + yIndex);
+            
 
             return ret;
 

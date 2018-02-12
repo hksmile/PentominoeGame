@@ -42,8 +42,13 @@ namespace myFirstAzureWebApp.Controllers
            return View(Json(b));
         }
 
+        public ActionResult TestAngular()
+        {
+            return View();
+        }
+
         [HttpPost]
-        public ActionResult TwoJs(string PuzzlePiece, int xLocation = 0, int yLocation = 0)
+        public ActionResult TwoJs(string PuzzlePiece, int xLocation = 0, int yLocation = 0, int unitNumber = 0, TransformOrientations orientation = TransformOrientations.DEFAULT)
         {
             PentominoeGameBoard board =(PentominoeGameBoard) Session["Board"];
 
