@@ -1267,14 +1267,16 @@ namespace myFirstAzureWebApp.Models
             int countUnusedPieces = unUsedPieces.Count;
             if (countUnusedPieces == 0) return;
 
-            string[] pieceNames = unUsedPieces.Keys.ToArray();
-            Random rnd = new Random();
+           
             
 
             while (unUsedPieces.Count > 0)
             {
+                    string[] pieceNames = unUsedPieces.Keys.ToArray();
+                    Random rnd = new Random();
                     int randomIndex = rnd.Next(0, pieceNames.Length);
                     string pieceName = pieceNames[randomIndex];
+
                     IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;

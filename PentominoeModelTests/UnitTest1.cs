@@ -458,7 +458,7 @@ namespace PentominoeModelTests
             Assert.AreEqual("X", b[3][0]);
         }
 
-      /*  [TestMethod]
+       [TestMethod]
         public void SolveForThreePieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
@@ -483,6 +483,7 @@ namespace PentominoeModelTests
             ret = placeReferencePieceP(board);
             Assert.IsTrue(ret);
 
+
             board.solveBoardPieceByPiece();
 
 
@@ -490,7 +491,7 @@ namespace PentominoeModelTests
             Assert.AreEqual("U", b[5][0]);
             Assert.AreEqual("X", b[3][0]);
             Assert.AreEqual("W", b[1][1]);
-        }*/
+        }
 
         [TestMethod]
         public void BoardIsPlayableEmpty()
