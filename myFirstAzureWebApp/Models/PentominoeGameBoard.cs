@@ -185,7 +185,7 @@ namespace myFirstAzureWebApp.Models
         public PieceN()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, 1, -1, 2, -1);
-            units[1] = new PentominoePuzzleUnit(1, -1, -1, -1, 0, -1, 2, -1, 3);
+            units[1] = new PentominoePuzzleUnit(1, -1, -1, -1, 0, -1, 2, 3, -1);
             units[2] = new PentominoePuzzleUnit(2, 1, -1, 0, -1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, -1, -1, 1, 2, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
@@ -275,7 +275,7 @@ namespace myFirstAzureWebApp.Models
             units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, -1, 3, -1, -1);
             units[2] = new PentominoePuzzleUnit(2, -1, 1, -1, -1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, 1, -1, -1, 2, 4, -1, -1, -1);
-            units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, -1, 1, 3, -1, -1, -1, -1);
 
 
         }
@@ -451,7 +451,7 @@ namespace myFirstAzureWebApp.Models
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, 2, -1);
             units[1] = new PentominoePuzzleUnit(1, 0, -1, -1, -1, 2, -1, 3, -1);
-            units[2] = new PentominoePuzzleUnit(2, 1, -1, 0, 1, -1, 3, 4, -1);
+            units[2] = new PentominoePuzzleUnit(2, -1, -1, 0, 1, -1, 3, 4, -1);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, 1, -1, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
 
@@ -583,7 +583,7 @@ namespace myFirstAzureWebApp.Models
             units[1] = new PentominoePuzzleUnit(1, -1, -1, -1, 0, -1, -1, -1, 2);
             units[2] = new PentominoePuzzleUnit(2, 0, 1, -1, -1, -1, 3, -1, 4);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, -1, 4, -1, -1, -1, -1);
-            units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, -1, 4, -1, -1, -1);
+            units[4] = new PentominoePuzzleUnit(4, -1, 2, -1, -1, 3, -1, -1, -1);
 
 
         }
@@ -1135,6 +1135,10 @@ namespace myFirstAzureWebApp.Models
             */
 
         }
+        public bool IsBoardSolved()
+        {
+            return (unUsedPieces.Count == 0) && (getAllBoardLocations(true).Count == 0);
+        }
 
         public bool IsBoardPlayable()
         {
@@ -1325,55 +1329,34 @@ namespace myFirstAzureWebApp.Models
         }
 
         //I'll need to use stack here to keep track of plays so I can back track.
-        public void solveBoard()
+        public void solveBoardLocByLoc()
         {
-            List<string> pieceNames = unUsedPieces.Keys.ToList();
-            
+            bool ret = false;
 
-            List<PentominoeGameBoardLocation> allLocations = getAllBoardLocations();
-            int index = 0;
-            while (unUsedPieces.Count > 0 && index < allLocations.Count)
+            while (getAllBoardLocations().Count > 0)
             {
-                PentominoeGameBoardLocation loc = allLocations[index];
-
-                if (loc.Covered) break;
-                foreach (string pieceName in pieceNames)
+                PentominoeGameBoardLocation loc = getAllBoardLocations().First();
+                if (!loc.Covered)
                 {
-                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
-                    if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, true))
+                    foreach (IPentominoePuzzlePiece piece in unUsedPieces.Values)
                     {
-                        break;
+                        ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
+                        if (ret)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (!ret)
+                    {
+                        UndoLastPlay();
                     }
 
                 }
 
-                if (loc.Covered)
-                {
-                    index++;
-                }
-                else
-                {
-                    UndoLastPlay();
-                }
-
+                
             }
-
-          /*  foreach (PentominoeGameBoardLocation loc in allLocations)
-            {
-                if (loc.Covered) break;
-                foreach (string pieceName in pieceNames)
-                {
-                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
-                    if (PlacePiece(piece, loc.Xindex, loc.Yindex))
-                    {
-                        if (!IsBoardPlayable())
-                            UndoLastPlay();
-                        else break;
-                    }
-
-                }
-
-            }*/
+            
 
         }
 

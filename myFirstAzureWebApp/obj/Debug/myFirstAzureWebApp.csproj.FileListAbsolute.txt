@@ -43,4 +43,3 @@ C:\Users\Heather\source\repos\myFirstAzureWebApp\myFirstAzureWebApp\bin\Microsof
 C:\Users\Heather\source\repos\myFirstAzureWebApp\myFirstAzureWebApp\obj\Debug\myFirstAzureWebApp.csproj.CoreCompileInputs.cache
 C:\Users\Heather\source\repos\myFirstAzureWebApp\myFirstAzureWebApp\obj\Debug\myFirstAzureWebApp.dll
 C:\Users\Heather\source\repos\myFirstAzureWebApp\myFirstAzureWebApp\obj\Debug\myFirstAzureWebApp.pdb
-C:\Users\Heather\source\repos\myFirstAzureWebApp\myFirstAzureWebApp\obj\Debug\myFirstAzureWebApp.csprojResolveAssemblyReference.cache

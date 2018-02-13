@@ -528,6 +528,87 @@ namespace PentominoeModelTests
         }
 
 
+        [TestMethod]
+        public void SolveForFivePieces()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardPieceByPiece();
+
+
+            string[][] b = board.GetBoard();
+            Assert.IsTrue(board.IsBoardSolved());
+        }
+        [TestMethod]
+        public void SolveForSixPieces()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardPieceByPiece();
+
+
+            string[][] b = board.GetBoard();
+            Assert.IsTrue(board.IsBoardSolved());
+        }
+
+        [TestMethod]
+        public void SolveForSevenPieces()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardPieceByPiece();
+
+
+            string[][] b = board.GetBoard();
+            Assert.IsTrue(board.IsBoardSolved());
+        }
 
         [TestMethod]
         public void BoardIsPlayableEmpty()
