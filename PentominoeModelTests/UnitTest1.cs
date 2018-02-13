@@ -424,6 +424,40 @@ namespace PentominoeModelTests
         }
 
         [TestMethod]
+        public void SolveForOnePieceByLocation()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceX(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceU(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceV(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceW(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceT(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+
+            board.solveBoardLocByLoc();
+            string[][] b = board.GetBoard();
+            Assert.AreEqual("P", b[5][9]);
+        }
+
+        [TestMethod]
         public void SolveForTwoPieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();            
@@ -458,7 +492,42 @@ namespace PentominoeModelTests
             Assert.AreEqual("X", b[3][0]);
         }
 
-       [TestMethod]
+        [TestMethod]
+        public void SolveForTwoPiecesByLoc()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceV(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceW(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceT(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+            board.solveBoardLocByLoc();
+
+
+            string[][] b = board.GetBoard();
+            Assert.AreEqual("U", b[5][0]);
+            Assert.AreEqual("X", b[3][0]);
+        }
+
+        [TestMethod]
         public void SolveForThreePieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
@@ -494,6 +563,40 @@ namespace PentominoeModelTests
         }
 
         [TestMethod]
+        public void SolveForThreePiecesByLoc()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceV(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceT(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardLocByLoc();
+
+
+            string[][] b = board.GetBoard();
+            Assert.AreEqual("U", b[5][0]);
+            Assert.AreEqual("X", b[3][0]);
+            Assert.AreEqual("W", b[1][1]);
+        }
+        [TestMethod]
         public void SolveForFourPieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
@@ -527,6 +630,39 @@ namespace PentominoeModelTests
             Assert.AreEqual("T", b[1][5]);
         }
 
+      /*  [TestMethod]
+        public void SolveForFourPiecesByLoc()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceV(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardLocByLoc();
+
+
+            string[][] b = board.GetBoard();
+            Assert.AreEqual("U", b[5][0]);
+            Assert.AreEqual("X", b[3][0]);
+            Assert.AreEqual("W", b[1][1]);
+            Assert.AreEqual("T", b[1][5]);
+        }
 
         [TestMethod]
         public void SolveForFivePieces()
@@ -551,6 +687,35 @@ namespace PentominoeModelTests
 
 
             board.solveBoardPieceByPiece();
+
+
+            string[][] b = board.GetBoard();
+            Assert.IsTrue(board.IsBoardSolved());
+        }
+
+        [TestMethod]
+        public void SolveForFivePiecesByLoc()
+        {
+            PentominoeGameBoard board = new PentominoeGameBoard();
+            bool ret = false;
+
+            ret = placeReferencePieceL(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceI(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceZ(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceY(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceN(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceF(board);
+            Assert.IsTrue(ret);
+            ret = placeReferencePieceP(board);
+            Assert.IsTrue(ret);
+
+
+            board.solveBoardLocByLoc();
 
 
             string[][] b = board.GetBoard();
@@ -609,6 +774,7 @@ namespace PentominoeModelTests
             string[][] b = board.GetBoard();
             Assert.IsTrue(board.IsBoardSolved());
         }
+        */
 
         [TestMethod]
         public void BoardIsPlayableEmpty()

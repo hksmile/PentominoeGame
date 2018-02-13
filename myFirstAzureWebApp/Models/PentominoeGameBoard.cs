@@ -862,6 +862,9 @@ namespace myFirstAzureWebApp.Models
             if (playStack == null || playStack.Count == 0) return false;
             HashSet<PentominoeGameBoardLocation> lastPlay = playStack.Pop();
             IPentominoePuzzlePiece piece = lastPlay.First().CoveredPiece;
+
+            Trace.WriteLine("Removed piece " + piece.pieceName());
+
             unUsedPieces.Add(piece.pieceName(), piece);
 
             foreach (PentominoeGameBoardLocation loc in lastPlay)
@@ -874,7 +877,7 @@ namespace myFirstAzureWebApp.Models
 
             }
 
-            Trace.WriteLine("Removed piece " + piece.pieceName());
+           
 
 
 
@@ -985,7 +988,7 @@ namespace myFirstAzureWebApp.Models
                 foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
                 {
                 orientString = orientation.ToString();
-                Trace.WriteLine("Checking Transformation " + orientString);
+               // Trace.WriteLine("Checking Transformation " + orientString);
                 for (int i = 0; i < 5; i++)
                 {
                    
@@ -1288,62 +1291,70 @@ namespace myFirstAzureWebApp.Models
             return ret;
 
         }
-
-       public void solveBoardPieceByPiece()
+        public void solveBoardPieceByPiece()
         {
-            int countUnusedPieces = unUsedPieces.Count;
-            if (countUnusedPieces == 0) return;
+            PlacePieceByPiece(unUsedPieces.Values.ToArray<IPentominoePuzzlePiece>());
+        }
+       private bool PlacePieceByPiece(IPentominoePuzzlePiece[] pieceSet)
+        {
+            if (pieceSet.Length == 0) return true;
+         
+            bool ret = false;
 
-           
-            
-
-            while (unUsedPieces.Count > 0)
-            {
-                    string[] pieceNames = unUsedPieces.Keys.ToArray();
-                    Random rnd = new Random();
-                    int randomIndex = rnd.Next(0, pieceNames.Length);
-                    string pieceName = pieceNames[randomIndex];
-
-                    IPentominoePuzzlePiece piece = ChoosePiece(pieceName);
+         
+                for (int i = 0; i< pieceSet.Length; i++)
+                {
+                    IPentominoePuzzlePiece piece = ChoosePiece(pieceSet[i].pieceName());
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;
-                    bool ret = false;
+
                     while (piece != null && index < allUncoveredLocations.Count)
                     {
                         PentominoeGameBoardLocation loc = allUncoveredLocations[index];
                         ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
                         if (ret)
                         {
-                            break;
+                            
+                        if (i + 1 <  pieceSet.Length)
+                        {
+                            ArraySegment<IPentominoePuzzlePiece> remainingPieces = new ArraySegment<IPentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
+                            ret = PlacePieceByPiece(remainingPieces.ToArray<IPentominoePuzzlePiece>());
+                            
+                        }
 
                         }
-                        index++;
+                        index = index + 5;
                     }
 
-                    if (!ret)
-                    {
-                        UndoLastPlay();
-                    }
-            }
+                   
+                }
+
+          
+            return ret;
 
         }
 
-        //I'll need to use stack here to keep track of plays so I can back track.
+     
         public void solveBoardLocByLoc()
         {
             bool ret = false;
 
-            while (getAllBoardLocations().Count > 0)
+            while (getAllBoardLocations(true).Count > 0)
             {
-                PentominoeGameBoardLocation loc = getAllBoardLocations().First();
+                PentominoeGameBoardLocation loc = getAllBoardLocations(true).First();
                 if (!loc.Covered)
                 {
-                    foreach (IPentominoePuzzlePiece piece in unUsedPieces.Values)
+                    string[] pieceNames = unUsedPieces.Keys.ToArray();
+                    foreach (string name in pieceNames)
                     {
-                        ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
-                        if (ret)
+                        IPentominoePuzzlePiece piece = ChoosePiece(name);
+                        if (piece != null)
                         {
-                            break;
+                            ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
+                            if (ret)
+                            {
+                                break;
+                            }
                         }
                     }
 
