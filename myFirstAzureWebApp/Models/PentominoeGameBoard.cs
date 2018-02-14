@@ -1308,22 +1308,23 @@ namespace myFirstAzureWebApp.Models
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;
 
-                    while (piece != null && index < allUncoveredLocations.Count)
+                    while (!ret && piece != null && index < allUncoveredLocations.Count)
                     {
                         PentominoeGameBoardLocation loc = allUncoveredLocations[index];
                         ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
                         if (ret)
                         {
                             
-                        if (i + 1 <  pieceSet.Length)
-                        {
-                            ArraySegment<IPentominoePuzzlePiece> remainingPieces = new ArraySegment<IPentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
-                            ret = PlacePieceByPiece(remainingPieces.ToArray<IPentominoePuzzlePiece>());
+                            if (i + 1 <  pieceSet.Length)
+                            {
+                                ArraySegment<IPentominoePuzzlePiece> remainingPieces = new ArraySegment<IPentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
+                                ret = PlacePieceByPiece(remainingPieces.ToArray<IPentominoePuzzlePiece>());
                             
-                        }
+                            }
+                           
 
                         }
-                        index = index + 5;
+                        index++;
                     }
 
                    
