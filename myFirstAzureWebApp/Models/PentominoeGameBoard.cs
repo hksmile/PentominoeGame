@@ -711,14 +711,14 @@ namespace myFirstAzureWebApp.Models
             return true;
         }
 
-        private List<PentominoeGameBoardLocation> getAllBoardLocations(bool excludeCovered = false)
+        private List<PentominoeGameBoardLocation> getAllBoardLocations(bool includeCovered = true)
         {
             List<PentominoeGameBoardLocation> allLocations = new List<PentominoeGameBoardLocation>();
             for (int i = 0; i < boardHeight; i++)
             {
                 for (int j = 0; j < boardWidth; j++)
                 {
-                    if (!excludeCovered  || (excludeCovered && !gameBoard[i,j].Covered))
+                    if (includeCovered  || (!includeCovered && !gameBoard[i,j].Covered))
                         allLocations.Add(gameBoard[i, j]);
                 }
             }
@@ -944,7 +944,7 @@ namespace myFirstAzureWebApp.Models
 
             HashSet<PentominoeGameBoardLocation> checkedLocation = new HashSet<PentominoeGameBoardLocation>(locationComparer);
 
-            List<PentominoeGameBoardLocation> uncoveredLocations = getAllBoardLocations(true);
+            List<PentominoeGameBoardLocation> uncoveredLocations = getAllBoardLocations(false);
             int totalUncovered = uncoveredLocations.Count;
 
 
@@ -1067,7 +1067,7 @@ namespace myFirstAzureWebApp.Models
             if (piece == null) return false;
             bool ret = false;
 
-            List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
+            List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(false);
             
             foreach (PentominoeGameBoardLocation loc in allUncoveredLocations)
             {
@@ -1095,7 +1095,7 @@ namespace myFirstAzureWebApp.Models
                 for (int i = 0; i< pieceSet.Length; i++)
                 {
                     PentominoePuzzlePiece piece = ChoosePiece(pieceSet[i].pieceName());
-                    List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
+                    List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(false);
                     int index = 0;
 
                     while (!ret && piece != null && index < allUncoveredLocations.Count)
@@ -1130,9 +1130,9 @@ namespace myFirstAzureWebApp.Models
         {
             bool ret = false;
 
-            while (getAllBoardLocations(true).Count > 0)
+            while (getAllBoardLocations(false).Count > 0)
             {
-                PentominoeGameBoardLocation loc = getAllBoardLocations(true).First();
+                PentominoeGameBoardLocation loc = getAllBoardLocations(false).First();
                 if (!loc.Covered)
                 {
                     string[] pieceNames = unUsedPieces.Keys.ToArray();
