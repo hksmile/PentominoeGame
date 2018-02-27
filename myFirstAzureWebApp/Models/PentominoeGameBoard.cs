@@ -663,7 +663,26 @@ namespace myFirstAzureWebApp.Models
         }
 
        
+        public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName)
+        {
+            if (playStack == null)
+            {
+                playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
+            }
 
+            playStack.Push(locations);
+
+            unUsedPieces.Remove(pieceName);
+            foreach (PentominoeGameBoardLocation loc in locations)
+            {
+                gameBoard[loc.Yindex, loc.Xindex] = loc;
+            }
+
+            Trace.WriteLine("Pushed Piece " + pieceName + " unit " + locations.First().CoveredUnit + " into " + locations.First().Xindex + "," + locations.First().Yindex);
+
+            return true;
+
+        }
         public bool UndoLastPlay()
         {
             if (playStack == null || playStack.Count == 0) return false;
@@ -749,20 +768,7 @@ namespace myFirstAzureWebApp.Models
 
             if (ret)
             {
-                if (playStack == null)
-                {
-                    playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
-                }
-
-                playStack.Push(locationsCovered);
-
-                unUsedPieces.Remove(piece.pieceName());
-                foreach (PentominoeGameBoardLocation loc in locationsCovered)
-                {
-                    gameBoard[loc.Yindex, loc.Xindex] = loc;
-                }
-
-                Trace.WriteLine("Pushed Piece " + piece.pieceName() + " unit " + locationsCovered.First().CoveredUnit + " into " + locationsCovered.First().Xindex + "," + locationsCovered.First().Yindex + " at orienation " + orientation.ToString());
+                CommitPlay(locationsCovered, piece.pieceName());
                 if (!IsBoardPlayable())
                 {
                     UndoLastPlay();
@@ -798,20 +804,7 @@ namespace myFirstAzureWebApp.Models
 
                     if (ret)
                     {
-                        if (playStack == null)
-                        {
-                            playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
-                        }
-
-                        playStack.Push(locationsCovered);
-
-                        unUsedPieces.Remove(piece.pieceName());
-                        foreach (PentominoeGameBoardLocation loc in locationsCovered)
-                        {
-                            gameBoard[loc.Yindex, loc.Xindex] = loc;
-                        }
-
-                        Trace.WriteLine("Pushed Piece " + piece.pieceName() + " unit " + locationsCovered.First().CoveredUnit + " into " + locationsCovered.First().Xindex + "," + locationsCovered.First().Yindex + " at orienation " + orientString);
+                        CommitPlay(locationsCovered, piece.pieceName());
                         if (checkSolvable && !IsBoardPlayable())
                         {
                             UndoLastPlay();
