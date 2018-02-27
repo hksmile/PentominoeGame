@@ -13,24 +13,43 @@ namespace myFirstAzureWebApp.Models
 
 
     //this should probably be an abstract base class... 
-    public interface IPentominoePuzzlePiece
+    public abstract class PentominoePuzzlePiece
     {
-         PentominoePuzzleUnit[] getUnits(TransformOrientations orientation);
-         string pieceName();
-        int Length();
-        int Width();
+        protected PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
+
+        public abstract string pieceName();
+        public abstract int Length();
+        public abstract int Width();
+
+        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
+        {
+
+            if (orientation == TransformOrientations.DEFAULT)
+                return units;
+
+            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
+
+            for (int i = 0; i < units.Length; i++)
+            {
+                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
+            }
+
+            return transformedUnits;
+        }
+
+        
 
     }
 
    
     public abstract class PuzzlePieceFactory
     {
-        public abstract IPentominoePuzzlePiece CreatePuzzlePiece(string type);
+        public abstract PentominoePuzzlePiece CreatePuzzlePiece(string type);
     }
 
     public class ConcretePuzzlePieceFactory : PuzzlePieceFactory
     {
-        public override IPentominoePuzzlePiece CreatePuzzlePiece(string type)
+        public override PentominoePuzzlePiece CreatePuzzlePiece(string type)
         {
             
             if (type == "I")
@@ -86,14 +105,8 @@ namespace myFirstAzureWebApp.Models
         }
     }
 
-    public class PieceF : IPentominoePuzzlePiece
+    public class PieceF : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "F";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
         public PieceF()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, 1, 3, -1, 2);
@@ -102,41 +115,24 @@ namespace myFirstAzureWebApp.Models
             units[3] = new PentominoePuzzleUnit(3, 0, 1, -1, 2, -1, 4, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, 3, -1, 2, -1, -1, -1, -1, -1);
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "F";
+        }
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-           
-           if (orientation == TransformOrientations.DEFAULT)
-            return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i=0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-     
 
     }
-    public class PieceV : IPentominoePuzzlePiece
+    public class PieceV : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "V";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceV()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, -1);
@@ -144,44 +140,25 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 1, -1, -1, -1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, -1, -1, 1, 2, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "V";
+        }
+
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
-
     }
-    public class PieceN : IPentominoePuzzlePiece
+    public class PieceN : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "N";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceN()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, 1, -1, 2, -1);
@@ -189,43 +166,25 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 1, -1, 0, -1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, -1, -1, 1, 2, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
-
-
         }
 
-        public int Length()
+        public override string pieceName()
+        {
+            return "N";
+        }
+        
+        public override int Length()
         {
             return 4;
         }
-        public int Width()
+        public override int Width()
         {
             return 2;
         }
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
+        
     }
-    public class PieceP : IPentominoePuzzlePiece
+    public class PieceP : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "P";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
         public PieceP()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, 1, 2, 3, -1);
@@ -233,42 +192,26 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 0, 1, -1, -1, 3, 4, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, 1, -1, 0, 2, -1, -1, -1, 4);
             units[4] = new PentominoePuzzleUnit(4, 2, 3, -1, -1, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "P";
+        }
+        
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 2;
         }
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
+        
     }
-    public class PieceT : IPentominoePuzzlePiece
+    public class PieceT : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "T";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceT()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, -1);
@@ -276,44 +219,26 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, -1, 1, -1, -1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, 1, -1, -1, 2, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 1, 3, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "T";
+        }
+
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
 
     }
-    public class PieceI: IPentominoePuzzlePiece
+    public class PieceI: PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "I";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceI()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, -1);
@@ -321,44 +246,26 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 1, -1, -1, -1, -1, 3, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, -1, -1, -1, 4, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, 3, -1, -1, -1, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "I";
+        }
+
+        public override int Length()
         {
             return 5;
         }
-        public int Width()
+        public override int Width()
         {
             return 1;
         }
 
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
-
     }
-    public class PieceU : IPentominoePuzzlePiece
+    public class PieceU : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "U";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+     
         public PieceU()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, 2);
@@ -366,43 +273,27 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, -1, 0, 4, 3, 1, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, 4, -1, -1, -1, 2, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, -1, -1, 3, 2, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "U";
+        }
+
+        public override int Length()
         {
             return 2;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
 
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
+        
     }
-    public class PieceL : IPentominoePuzzlePiece
+    public class PieceL : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "L";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceL()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, -1, -1);
@@ -410,43 +301,26 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 1, -1, -1, -1, -1, 3, 4, -1);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, -1, -1, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "L";
+        }
+
+        public override int Length()
         {
             return 4;
         }
-        public int Width()
+        public override int Width()
         {
             return 2;
         }
 
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
     }
-    public class PieceW : IPentominoePuzzlePiece
+    public class PieceW : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "W";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceW()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 1, 2, -1);
@@ -454,85 +328,52 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, -1, -1, 0, 1, -1, 3, 4, -1);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, 1, -1, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, 2, 3, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "W";
+        }
+
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
+        
     }
-    public class PieceX : IPentominoePuzzlePiece
+    public class PieceX : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "X";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-         
         public PieceX()
         {
             units[0] = new PentominoePuzzleUnit(0,-1,-1,-1,-1, -1, 2, 3, 1);
             units[1] = new PentominoePuzzleUnit(1,-1, 0, -1, -1, 2, -1, 4, -1);
             units[2] = new PentominoePuzzleUnit(2,0,-1,-1,1,3,4, -1, -1);
             units[3] = new PentominoePuzzleUnit(3,-1, -1, 0, 2, -1, -1, -1, 4);
-            units[4] = new PentominoePuzzleUnit(4,2, 3, 1, -1, -1, -1, -1, -1);
-            
-            
+            units[4] = new PentominoePuzzleUnit(4,2, 3, 1, -1, -1, -1, -1, -1);            
         }
-        public int Length()
+
+        public override string pieceName()
+        {
+            return "X";
+        }
+
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
+        
     }
-    public class PieceY : IPentominoePuzzlePiece
+    public class PieceY : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "Y";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceY()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, -1, 2, 3, 1);
@@ -540,43 +381,25 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 0, -1, -1, 1, 3, -1, -1, -1);
             units[3] = new PentominoePuzzleUnit(3, -1, -1, 0, 2, 4, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, -1, -1, 3, -1, -1, -1, -1);
-
-
         }
-        public int Length()
+        public override string pieceName()
+        {
+            return "Y";
+        }
+
+        public override int Length()
         {
             return 4;
         }
-        public int Width()
+        public override int Width()
         {
             return 2;
         }
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
-
+        
     }
-    public class PieceZ : IPentominoePuzzlePiece
+    public class PieceZ : PentominoePuzzlePiece
     {
-        public string pieceName()
-        {
-            return "Z";
-        }
-        private PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
-
+        
         public PieceZ()
         {
             units[0] = new PentominoePuzzleUnit(0, -1, -1, -1, -1, 1, 2, -1, -1);
@@ -584,34 +407,20 @@ namespace myFirstAzureWebApp.Models
             units[2] = new PentominoePuzzleUnit(2, 0, 1, -1, -1, -1, 3, -1, 4);
             units[3] = new PentominoePuzzleUnit(3, 2, -1, -1, 4, -1, -1, -1, -1);
             units[4] = new PentominoePuzzleUnit(4, -1, 2, -1, -1, 3, -1, -1, -1);
-
-
         }
-        public int Length()
+        public override string pieceName()
+        {
+            return "Z";
+        }
+
+        public override int Length()
         {
             return 3;
         }
-        public int Width()
+        public override int Width()
         {
             return 3;
         }
-
-        public PentominoePuzzleUnit[] getUnits(TransformOrientations orientation)
-        {
-
-            if (orientation == TransformOrientations.DEFAULT)
-                return units;
-
-            PentominoePuzzleUnit[] transformedUnits = new PentominoePuzzleUnit[5];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                transformedUnits[i] = new PentominoePuzzleUnit(units[i], orientation);
-            }
-
-            return transformedUnits;
-        }
-
     }
 
     public class PentominoePuzzleUnit
@@ -788,9 +597,9 @@ namespace myFirstAzureWebApp.Models
         private bool covered = false;
         public bool Covered { get { return covered; } set { covered = value; } }
 
-        private IPentominoePuzzlePiece coveredPiece;
+        private PentominoePuzzlePiece coveredPiece;
         //pieces don't change.. thing about making this a singleton or something
-        public IPentominoePuzzlePiece CoveredPiece { get { return coveredPiece; } set { coveredPiece = value; } }
+        public PentominoePuzzlePiece CoveredPiece { get { return coveredPiece; } set { coveredPiece = value; } }
 
         private int coveredUnit;
         public int CoveredUnit { get { return coveredUnit; } set { coveredUnit = value; } }
@@ -833,7 +642,7 @@ namespace myFirstAzureWebApp.Models
     public class PentominoeGameBoard
     {
         private PentominoeGameBoardLocation[,] gameBoard;
-        private Dictionary<string, IPentominoePuzzlePiece> unUsedPieces;
+        private Dictionary<string, PentominoePuzzlePiece> unUsedPieces;
         private Stack<HashSet<PentominoeGameBoardLocation>> playStack;
 
         private int boardHeight = 6;
@@ -861,7 +670,7 @@ namespace myFirstAzureWebApp.Models
         {
             if (playStack == null || playStack.Count == 0) return false;
             HashSet<PentominoeGameBoardLocation> lastPlay = playStack.Pop();
-            IPentominoePuzzlePiece piece = lastPlay.First().CoveredPiece;
+            PentominoePuzzlePiece piece = lastPlay.First().CoveredPiece;
 
             Trace.WriteLine("Removed piece " + piece.pieceName());
 
@@ -928,7 +737,7 @@ namespace myFirstAzureWebApp.Models
             return board;
         }
 
-        public IPentominoePuzzlePiece ChoosePiece(string pieceName)
+        public PentominoePuzzlePiece ChoosePiece(string pieceName)
         {
             if (unUsedPieces == null) return null;
             if (pieceName != null && unUsedPieces.ContainsKey(pieceName)) return unUsedPieces[pieceName];
@@ -938,7 +747,7 @@ namespace myFirstAzureWebApp.Models
 
         }
 
-        public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
+        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
         {
             if (piece == null) return false;
             bool ret = false;
@@ -976,7 +785,7 @@ namespace myFirstAzureWebApp.Models
 
         //can't ask if playable until I've committed to covereing
 
-        public bool PlayPiece(IPentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
+        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
         {
             if (piece == null) return false;
             PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
@@ -1029,7 +838,7 @@ namespace myFirstAzureWebApp.Models
             return ret;
         }
 
-        private bool DoesUnitPieceCoverLocation(IPentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
+        private bool DoesUnitPieceCoverLocation(PentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
         {
             PentominoeGameBoardLocation location;
             if (updatedLocations == null) return false;
@@ -1081,10 +890,10 @@ namespace myFirstAzureWebApp.Models
 
         public void InitializePuzzlePieces()
         {
-            unUsedPieces = new Dictionary<string, IPentominoePuzzlePiece>();
+            unUsedPieces = new Dictionary<string, PentominoePuzzlePiece>();
             ConcretePuzzlePieceFactory puzzlePieceFactory = new ConcretePuzzlePieceFactory();
 
-            IPentominoePuzzlePiece piece = puzzlePieceFactory.CreatePuzzlePiece("X");
+            PentominoePuzzlePiece piece = puzzlePieceFactory.CreatePuzzlePiece("X");
             unUsedPieces.Add(piece.pieceName(), piece);
 
             piece = puzzlePieceFactory.CreatePuzzlePiece("I");
@@ -1187,7 +996,7 @@ namespace myFirstAzureWebApp.Models
 
                     bool couldAnyPieceFit = false;
                     //if you're left with continguous space that no unUsed pieces could fit into then the board is not playable.
-                    foreach(IPentominoePuzzlePiece piece in unUsedPieces.Values)
+                    foreach(PentominoePuzzlePiece piece in unUsedPieces.Values)
                     {
                         couldAnyPieceFit = couldPieceFit(piece, contiguousUncoveredLocations);
                         if (couldAnyPieceFit) break;
@@ -1206,7 +1015,7 @@ namespace myFirstAzureWebApp.Models
             return true;
         }
 
-        private bool couldPieceFit (IPentominoePuzzlePiece piece, HashSet<PentominoeGameBoardLocation> contiguousLocations)
+        private bool couldPieceFit (PentominoePuzzlePiece piece, HashSet<PentominoeGameBoardLocation> contiguousLocations)
         {
             bool ret = false;
             //determine size of continguous location
@@ -1272,7 +1081,7 @@ namespace myFirstAzureWebApp.Models
         }
 
 
-        private bool isPiecePlayable(IPentominoePuzzlePiece piece)
+        private bool isPiecePlayable(PentominoePuzzlePiece piece)
         {
             if (piece == null) return false;
             bool ret = false;
@@ -1293,9 +1102,9 @@ namespace myFirstAzureWebApp.Models
         }
         public void solveBoardPieceByPiece()
         {
-            PlacePieceByPiece(unUsedPieces.Values.ToArray<IPentominoePuzzlePiece>());
+            PlacePieceByPiece(unUsedPieces.Values.ToArray<PentominoePuzzlePiece>());
         }
-       private bool PlacePieceByPiece(IPentominoePuzzlePiece[] pieceSet)
+       private bool PlacePieceByPiece(PentominoePuzzlePiece[] pieceSet)
         {
             if (pieceSet.Length == 0) return true;
          
@@ -1304,7 +1113,7 @@ namespace myFirstAzureWebApp.Models
          
                 for (int i = 0; i< pieceSet.Length; i++)
                 {
-                    IPentominoePuzzlePiece piece = ChoosePiece(pieceSet[i].pieceName());
+                    PentominoePuzzlePiece piece = ChoosePiece(pieceSet[i].pieceName());
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(true);
                     int index = 0;
 
@@ -1317,8 +1126,8 @@ namespace myFirstAzureWebApp.Models
                             
                             if (i + 1 <  pieceSet.Length)
                             {
-                                ArraySegment<IPentominoePuzzlePiece> remainingPieces = new ArraySegment<IPentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
-                                ret = PlacePieceByPiece(remainingPieces.ToArray<IPentominoePuzzlePiece>());
+                                ArraySegment<PentominoePuzzlePiece> remainingPieces = new ArraySegment<PentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
+                                ret = PlacePieceByPiece(remainingPieces.ToArray<PentominoePuzzlePiece>());
                             
                             }
                            
@@ -1348,7 +1157,7 @@ namespace myFirstAzureWebApp.Models
                     string[] pieceNames = unUsedPieces.Keys.ToArray();
                     foreach (string name in pieceNames)
                     {
-                        IPentominoePuzzlePiece piece = ChoosePiece(name);
+                        PentominoePuzzlePiece piece = ChoosePiece(name);
                         if (piece != null)
                         {
                             ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);

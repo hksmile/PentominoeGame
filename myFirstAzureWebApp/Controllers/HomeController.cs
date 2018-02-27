@@ -54,7 +54,7 @@ namespace myFirstAzureWebApp.Controllers
 
             if (PuzzlePiece != "")
             {
-                IPentominoePuzzlePiece piece = board.ChoosePiece(PuzzlePiece);
+                PentominoePuzzlePiece piece = board.ChoosePiece(PuzzlePiece);
                 bool ret = board.PlayPiece(piece, xLocation, yLocation);
             }
             else

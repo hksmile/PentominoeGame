@@ -11,7 +11,7 @@ namespace PentominoeModelTests
         public void PlacePieceXOutOfBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 0, 0);
             Assert.IsTrue(!ret);
            
@@ -21,7 +21,7 @@ namespace PentominoeModelTests
         public void PlacePieceXInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 3, 3);
             Assert.IsTrue(ret);
         }
@@ -30,7 +30,7 @@ namespace PentominoeModelTests
         public void PlayPieceXandI()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 3, 3, 0, TransformOrientations.DEFAULT);
             Assert.IsTrue(ret);
 
@@ -56,7 +56,7 @@ namespace PentominoeModelTests
         public void PlacePieceIInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("I");
+            PentominoePuzzlePiece piece = board.ChoosePiece("I");
             bool ret = board.PlayPiece(piece, 0, 4);
             Assert.IsTrue(ret);
         }
@@ -77,7 +77,7 @@ namespace PentominoeModelTests
         public void PlacePieceTInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("T");
+            PentominoePuzzlePiece piece = board.ChoosePiece("T");
             bool ret = board.PlayPiece(piece, 8, 2);
             Assert.IsTrue(ret);
         }
@@ -98,7 +98,7 @@ namespace PentominoeModelTests
         public void PlacePieceUInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("U");
+            PentominoePuzzlePiece piece = board.ChoosePiece("U");
             bool ret = board.PlayPiece(piece, 7, 1);
             Assert.IsTrue(ret);
         }
@@ -117,7 +117,7 @@ namespace PentominoeModelTests
         public void PlacePieceVInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("V");
+            PentominoePuzzlePiece piece = board.ChoosePiece("V");
             bool ret = board.PlayPiece(piece, 4, 4);
             Assert.IsTrue(ret);
         }
@@ -136,7 +136,7 @@ namespace PentominoeModelTests
         public void PlacePieceWInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("W");
+            PentominoePuzzlePiece piece = board.ChoosePiece("W");
             bool ret = board.PlayPiece(piece, 5, 5);
             Assert.IsTrue(ret);
         }
@@ -157,7 +157,7 @@ namespace PentominoeModelTests
         public void PlacePieceYInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("Y");
+            PentominoePuzzlePiece piece = board.ChoosePiece("Y");
             bool ret = board.PlayPiece(piece, 5, 3);
             Assert.IsTrue(ret);
         }
@@ -176,7 +176,7 @@ namespace PentominoeModelTests
         public void PlacePieceNInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("N");
+            PentominoePuzzlePiece piece = board.ChoosePiece("N");
             bool ret = board.PlayPiece(piece, 6, 1);
             Assert.IsTrue(ret);
         }
@@ -195,7 +195,7 @@ namespace PentominoeModelTests
         public void PlacePiecePInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("P");
+            PentominoePuzzlePiece piece = board.ChoosePiece("P");
             bool ret = board.PlayPiece(piece, 4, 3);
             Assert.IsTrue(ret);
         }
@@ -217,7 +217,7 @@ namespace PentominoeModelTests
         public void PlacePieceLInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("L");
+            PentominoePuzzlePiece piece = board.ChoosePiece("L");
             bool ret = board.PlayPiece(piece, 2, 4);
             Assert.IsTrue(ret);
         }
@@ -236,7 +236,7 @@ namespace PentominoeModelTests
         public void PlacePieceZInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("Z");
+            PentominoePuzzlePiece piece = board.ChoosePiece("Z");
             bool ret = board.PlayPiece(piece, 1, 5);
             Assert.IsTrue(ret);
         }
@@ -255,7 +255,7 @@ namespace PentominoeModelTests
         public void PlacePieceFInBounds()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("F");
+            PentominoePuzzlePiece piece = board.ChoosePiece("F");
             bool ret = board.PlayPiece(piece, 8, 5);
             Assert.IsTrue(ret);
         }
@@ -315,68 +315,68 @@ namespace PentominoeModelTests
 
         private bool placeReferencePieceX(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             return board.PlayPiece(piece, 1, 4, 0, TransformOrientations.DEFAULT);
 
         }
 
         private bool placeReferencePieceP(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("P");
+            PentominoePuzzlePiece piece = board.ChoosePiece("P");
             return board.PlayPiece(piece, 9, 5, 0, TransformOrientations.MIRROR_LEFT);
         }
 
         private bool placeReferencePieceF(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("F");
+            PentominoePuzzlePiece piece = board.ChoosePiece("F");
             return board.PlayPiece(piece, 5, 4, 0, TransformOrientations.MIRROR_LEFT);
         }
 
         private bool placeReferencePieceN(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("N");
+            PentominoePuzzlePiece piece = board.ChoosePiece("N");
             return board.PlayPiece(piece, 8, 3, 0, TransformOrientations.ROTATE_90_CLOCK_MIRROR_DOWN);
         }
 
         private bool placeReferencePieceY(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("Y");
+            PentominoePuzzlePiece piece = board.ChoosePiece("Y");
             return board.PlayPiece(piece, 6, 4, 0, TransformOrientations.ROTATE_90_CLOCK_MIRROR_DOWN);
         }
 
         private bool placeReferencePieceZ(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("Z");
+            PentominoePuzzlePiece piece = board.ChoosePiece("Z");
             return board.PlayPiece(piece, 8, 1, 0, TransformOrientations.ROTATE_90_COUNTER_CLOCKWISE);
         }
 
         private bool placeReferencePieceI(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("I");
+            PentominoePuzzlePiece piece = board.ChoosePiece("I");
             return board.PlayPiece(piece, 3, 0, 0, TransformOrientations.ROTATE_90_CLOCKWISE);
         }
 
         private bool placeReferencePieceT(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("T");
+            PentominoePuzzlePiece piece = board.ChoosePiece("T");
             return board.PlayPiece(piece, 4, 3, 0, TransformOrientations.DEFAULT);
         }
 
         private bool placeReferencePieceL(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("L");
+            PentominoePuzzlePiece piece = board.ChoosePiece("L");
             return board.PlayPiece(piece, 6, 5, 0, TransformOrientations.ROTATE_90_COUNTER_CLOCKWISE);
         }
 
         private bool placeReferencePieceW(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("W");
+            PentominoePuzzlePiece piece = board.ChoosePiece("W");
             return board.PlayPiece(piece, 1, 1, 0, TransformOrientations.ROTATE_90_CLOCKWISE);
         }
 
         private bool placeReferencePieceV(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("V");
+            PentominoePuzzlePiece piece = board.ChoosePiece("V");
             return board.PlayPiece(piece, 0, 2, 0, TransformOrientations.DEFAULT);
 
             
@@ -384,7 +384,7 @@ namespace PentominoeModelTests
 
         private bool placeReferencePieceU(PentominoeGameBoard board)
         {
-            IPentominoePuzzlePiece piece = board.ChoosePiece("U");
+            PentominoePuzzlePiece piece = board.ChoosePiece("U");
             return board.PlayPiece(piece, 2, 4, 0, TransformOrientations.MIRROR_DOWN);
 
         }
@@ -664,7 +664,7 @@ namespace PentominoeModelTests
             Assert.AreEqual("T", b[1][5]);
         }
         */
-
+        /*
             
         [TestMethod]
         public void SolveForFivePieces()
@@ -695,7 +695,7 @@ namespace PentominoeModelTests
             Assert.IsTrue(board.IsBoardSolved());
         }
 
-        /*
+        
         [TestMethod]
         public void SolveForFivePiecesByLoc()
         {
@@ -791,7 +791,7 @@ namespace PentominoeModelTests
         public void BoardIsPlayableSinglePiece()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             ret = board.IsBoardPlayable();
@@ -802,7 +802,7 @@ namespace PentominoeModelTests
         public void BoardIsNotPlayableTwoPiece()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("L");
@@ -816,7 +816,7 @@ namespace PentominoeModelTests
         public void BoardIsPlayableTwoPiece()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("L");
@@ -830,7 +830,7 @@ namespace PentominoeModelTests
         public void BoardIsPlayableThreePiece()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("L");
@@ -847,7 +847,7 @@ namespace PentominoeModelTests
         public void BoardIsNOTPlayableThreePiece()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("U");
@@ -864,7 +864,7 @@ namespace PentominoeModelTests
         public void BoardIsNotPlayableSingleSpace()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 0, 1);
             Assert.IsTrue(ret);
             ret = board.IsBoardPlayable();
@@ -875,7 +875,7 @@ namespace PentominoeModelTests
         public void UndoLastPlay()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 0, 1);
             Assert.IsTrue(ret);
             ret = board.UndoLastPlay();
@@ -886,7 +886,7 @@ namespace PentominoeModelTests
         public void TestPieceUPieceXPlacement()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
-            IPentominoePuzzlePiece piece = board.ChoosePiece("X");
+            PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 1, 1);
             Assert.IsTrue(ret);
             piece = board.ChoosePiece("U");
