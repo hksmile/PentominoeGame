@@ -10,9 +10,7 @@ namespace myFirstAzureWebApp.Models
 
     public enum LocationNames { ABOVE_LEFT, ABOVE_CENTER, ABOVE_RIGHT, LEFT, RIGHT, BELOW_LEFT, BELOW_CENTER, BELOW_RIGHT };
     public enum TransformOrientations { DEFAULT , ROTATE_90_COUNTER_CLOCKWISE, ROTATE_90_CLOCKWISE, MIRROR_LEFT, MIRROR_DOWN, ROTATE_180, ROTATE_90_COUNTER_MIRROR_DOWN, ROTATE_90_CLOCK_MIRROR_DOWN};
-
-
-    //this should probably be an abstract base class... 
+    
     public abstract class PentominoePuzzlePiece
     {
         protected PentominoePuzzleUnit[] units = new PentominoePuzzleUnit[5];
@@ -37,8 +35,6 @@ namespace myFirstAzureWebApp.Models
             return transformedUnits;
         }
 
-        
-
     }
 
    
@@ -47,7 +43,7 @@ namespace myFirstAzureWebApp.Models
         public abstract PentominoePuzzlePiece CreatePuzzlePiece(string type);
     }
 
-    public class ConcretePuzzlePieceFactory : PuzzlePieceFactory
+    public class PentominoePuzzlePieceFactory : PuzzlePieceFactory
     {
         public override PentominoePuzzlePiece CreatePuzzlePiece(string type)
         {
@@ -465,8 +461,6 @@ namespace myFirstAzureWebApp.Models
             }
         }
 
-
-       
     }
 
     public class AdjacentLocation
@@ -595,14 +589,13 @@ namespace myFirstAzureWebApp.Models
     public class PentominoeGameBoardLocation
     {
         private bool covered = false;
-        public bool Covered { get { return covered; } set { covered = value; } }
+        public bool Covered { get { return (coveredPiece != null) || (coveredUnit >=0); }}
 
         private PentominoePuzzlePiece coveredPiece;
-        //pieces don't change.. thing about making this a singleton or something
-        public PentominoePuzzlePiece CoveredPiece { get { return coveredPiece; } set { coveredPiece = value; } }
+        public PentominoePuzzlePiece CoveredPiece { get { return coveredPiece; }}
 
-        private int coveredUnit;
-        public int CoveredUnit { get { return coveredUnit; } set { coveredUnit = value; } }
+        private int coveredUnit = -1;
+        public int CoveredUnit { get { return coveredUnit; }}
 
         private int xIndex;
         public int Xindex { get { return xIndex; } }
@@ -625,6 +618,11 @@ namespace myFirstAzureWebApp.Models
             coveredUnit = loc.coveredUnit;
         }
     
+        public void CoverLocation(PentominoePuzzlePiece piece, int unitNumber)
+        {
+            coveredPiece = piece;
+            coveredUnit = unitNumber;
+        }
     }
 
     public class PentominoeLocationComparer : IEqualityComparer<PentominoeGameBoardLocation>
@@ -680,15 +678,8 @@ namespace myFirstAzureWebApp.Models
             {
                 //why is this updating my loc value also?
                 PentominoeGameBoardLocation boardLocation = gameBoard[loc.Yindex, loc.Xindex];
-                boardLocation.Covered = false;
-                boardLocation.CoveredPiece = null;
-                boardLocation.CoveredUnit = -1;
-
+                boardLocation.CoverLocation(null, -1);
             }
-
-           
-
-
 
             return true;
         }
@@ -864,9 +855,7 @@ namespace myFirstAzureWebApp.Models
             unitsPlaced.Add(unitNumber);
 
             PentominoeGameBoardLocation l = new PentominoeGameBoardLocation(xIndex, yIndex);
-            l.Covered = true;
-            l.CoveredPiece = piece;
-            l.CoveredUnit = unitNumber;
+            l.CoverLocation(piece, unitNumber);
             updatedLocations.Add(l);
 
             bool ret = true;
@@ -891,7 +880,7 @@ namespace myFirstAzureWebApp.Models
         public void InitializePuzzlePieces()
         {
             unUsedPieces = new Dictionary<string, PentominoePuzzlePiece>();
-            ConcretePuzzlePieceFactory puzzlePieceFactory = new ConcretePuzzlePieceFactory();
+            PentominoePuzzlePieceFactory puzzlePieceFactory = new PentominoePuzzlePieceFactory();
 
             PentominoePuzzlePiece piece = puzzlePieceFactory.CreatePuzzlePiece("X");
             unUsedPieces.Add(piece.pieceName(), piece);
