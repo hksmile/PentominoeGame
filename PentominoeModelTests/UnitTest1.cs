@@ -664,7 +664,7 @@ namespace PentominoeModelTests
             Assert.AreEqual("T", b[1][5]);
         }
         */
-        /*
+        
             
         [TestMethod]
         public void SolveForFivePieces()
@@ -695,7 +695,7 @@ namespace PentominoeModelTests
             Assert.IsTrue(board.IsBoardSolved());
         }
 
-        
+       /* 
         [TestMethod]
         public void SolveForFivePiecesByLoc()
         {

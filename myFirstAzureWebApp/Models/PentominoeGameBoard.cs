@@ -637,6 +637,41 @@ namespace myFirstAzureWebApp.Models
             return hash.GetHashCode();
         }
     }
+
+    public class GamePlay
+    {
+        //what makes a play equal?  sam list of locations with same piece .. don't care about unit number.. because symmetry is irrelevant here.
+        public List<PentominoeGameBoardLocation> locationsCovered;
+        public GamePlay(List<PentominoeGameBoardLocation> locs)
+        {
+            locationsCovered = new List<PentominoeGameBoardLocation>(locs);
+
+        }
+
+    }
+
+    public class GamePlayComparer: IEqualityComparer<GamePlay>
+    {
+        public bool Equals(GamePlay play1, GamePlay play2)
+        {
+            if (play1 == null || play2 == null) return false;
+            if (play1.locationsCovered == null || play2.locationsCovered == null) return false;
+            if (play1.locationsCovered.Count != play2.locationsCovered.Count) return false;
+            if (play1.locationsCovered.First().CoveredPiece.pieceName() != play2.locationsCovered.First().CoveredPiece.pieceName()) return false;
+
+            foreach (PentominoeGameBoardLocation loc in play1.locationsCovered)
+            {
+                if (!play2.locationsCovered.Contains(loc)) return false;
+
+            }
+            return true ;
+        }
+        public int GetHashCode(GamePlay obj)
+        {
+            return 0;
+
+        }
+    }
     public class PentominoeGameBoard
     {
         private PentominoeGameBoardLocation[,] gameBoard;
@@ -717,6 +752,67 @@ namespace myFirstAzureWebApp.Models
             return true;
 
         }
+
+        public PentominoePuzzlePiece ChoosePiece(string pieceName)
+        {
+            if (unUsedPieces == null) return null;
+            if (pieceName != null && unUsedPieces.ContainsKey(pieceName)) return unUsedPieces[pieceName];
+
+            return null;
+
+        }
+        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
+        {
+            if (piece == null) return false;
+            bool ret = false;
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
+            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+
+            ret = DoesUnitPieceCoverLocation(piece, unitNumber, xIndex, yIndex, locationsCovered, null, orientation);
+
+            if (ret)
+            {
+                CommitPlay(locationsCovered, piece.pieceName(), true);
+
+            }
+
+            return ret;
+        }
+        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
+        {
+            if (piece == null) return false;
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
+
+            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+            bool ret = false;
+            string orientString = "";
+
+            foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
+            {
+                orientString = orientation.ToString();
+                // Trace.WriteLine("Checking Transformation " + orientString);
+                for (int i = 0; i < 5; i++)
+                {
+
+                    locationsCovered.Clear();
+                    //Trace.WriteLine("CHECKING " + piece.pieceName() + " unit " + i);
+                    ret = DoesUnitPieceCoverLocation(piece, i, xIndex, yIndex, locationsCovered, null, orientation);
+
+                    if (ret)
+                    {
+                        ret = CommitPlay(locationsCovered, piece.pieceName(), checkSolvable);
+
+                    }
+                    if (ret) break;
+                }
+                if (ret) break;
+            }
+
+
+
+            return ret;
+        }
+
         public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName, bool checkSolvable)
         {
             bool ret = true;
@@ -760,6 +856,41 @@ namespace myFirstAzureWebApp.Models
             return true;
         }
 
+        public string[][] GetBoard()
+        {
+            string[][] board = new string[boardHeight][];
+            for (int i = 0; i < boardHeight; i++)
+            {
+                board[i] = new string[boardWidth];
+                for (int j = 0; j < boardWidth; j++)
+                {
+                    PentominoeGameBoardLocation loc = gameBoard[i, j];
+                    if (loc.Covered)
+                        board[i][j] = loc.CoveredPiece.pieceName();
+
+                }
+            }
+            return board;
+        }
+
+        public bool IsBoardSolved()
+        {
+            return (unUsedPieces.Count == 0) && (getAllBoardLocations(true).Count == 0);
+        }
+        public bool IsBoardPlayable()
+        {
+
+            bool ret = checkContiguousSpace();
+
+            /* foreach (IPentominoePuzzlePiece piece in unUsedPieces.Values)
+             {
+                 if (!isPiecePlayable(piece))
+                     return false;
+             }*/
+
+            return ret;
+        }
+
         private List<PentominoeGameBoardLocation> getAllBoardLocations(bool includeCovered = true)
         {
             List<PentominoeGameBoardLocation> allLocations = new List<PentominoeGameBoardLocation>();
@@ -784,85 +915,6 @@ namespace myFirstAzureWebApp.Models
                 loc = gameBoard[yIndex, xIndex];
             }
             return loc;
-        }
-
-        public string[][] GetBoard()
-        {
-            string[][] board = new string[boardHeight][];
-            for (int i = 0; i < boardHeight; i++)
-            {
-                board[i] = new string[boardWidth];
-                for (int j = 0; j < boardWidth; j++)
-                {
-                    PentominoeGameBoardLocation loc = gameBoard[i, j];
-                    if (loc.Covered)
-                        board[i][j] = loc.CoveredPiece.pieceName();
-
-                }
-            }
-            return board;
-        }
-
-        public PentominoePuzzlePiece ChoosePiece(string pieceName)
-        {
-            if (unUsedPieces == null) return null;
-            if (pieceName != null && unUsedPieces.ContainsKey(pieceName)) return unUsedPieces[pieceName];
-
-            return null;
-
-        }
-
-        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
-        {
-            if (piece == null) return false;
-            bool ret = false;
-            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
-            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
-
-            ret = DoesUnitPieceCoverLocation(piece, unitNumber, xIndex, yIndex, locationsCovered, null, orientation);
-
-            if (ret)
-            {
-                CommitPlay(locationsCovered, piece.pieceName(), true);
-                
-            }
-
-            return ret;
-        }
-
-        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
-        {
-            if (piece == null) return false;
-            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
-
-            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
-            bool ret = false;
-            string orientString = "";
-           
-                foreach (TransformOrientations orientation in Enum.GetValues(typeof(TransformOrientations)))
-                {
-                orientString = orientation.ToString();
-               // Trace.WriteLine("Checking Transformation " + orientString);
-                for (int i = 0; i < 5; i++)
-                {
-                   
-                    locationsCovered.Clear();
-                    //Trace.WriteLine("CHECKING " + piece.pieceName() + " unit " + i);
-                    ret = DoesUnitPieceCoverLocation(piece, i, xIndex, yIndex, locationsCovered, null, orientation);
-
-                    if (ret)
-                    {
-                        ret = CommitPlay(locationsCovered, piece.pieceName(), checkSolvable);
-                       
-                    }
-                    if (ret) break;
-                }
-                if (ret) break;
-            }
-
-       
-
-            return ret;
         }
 
         private bool DoesUnitPieceCoverLocation(PentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
@@ -912,97 +964,6 @@ namespace myFirstAzureWebApp.Models
             return ret;
 
         }
-  
-        public bool IsBoardSolved()
-        {
-            return (unUsedPieces.Count == 0) && (getAllBoardLocations(true).Count == 0);
-        }
-
-        public bool IsBoardPlayable()
-        {
-
-           // Trace.WriteLine("IS BOARD PLAYABLE");
-            //each contiguous block has at least 5 units
-            //count number of contiguous blocks and see that each is divisible by 5
-
-            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
-
-            HashSet<PentominoeGameBoardLocation> checkedLocation = new HashSet<PentominoeGameBoardLocation>(locationComparer);
-
-            List<PentominoeGameBoardLocation> uncoveredLocations = getAllBoardLocations(false);
-            int totalUncovered = uncoveredLocations.Count;
-
-
-            foreach (PentominoeGameBoardLocation loc in uncoveredLocations)
-            {
-                PentominoeGameBoardLocation tempLoc = new PentominoeGameBoardLocation(loc);
-                if (checkedLocation.Count == totalUncovered) break;
-
-                if (!checkedLocation.Contains(tempLoc))
-                {
-                    checkedLocation.Add(tempLoc);
-                    
-                    HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>(locationComparer);
-                    contiguousUncoveredLocations.Add(tempLoc);
-                    if (!getEmptyAdjacents(tempLoc, contiguousUncoveredLocations))
-                    {
-                        return false;  //single uncovered location
-                    }
-                    else
-                    {
-                        if (contiguousUncoveredLocations.Count % 5 != 0)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            checkedLocation.Union(contiguousUncoveredLocations);
-                        }
-                    }
-
-                    bool couldAnyPieceFit = false;
-                    //if you're left with continguous space that no unUsed pieces could fit into then the board is not playable.
-                    foreach(PentominoePuzzlePiece piece in unUsedPieces.Values)
-                    {
-                        couldAnyPieceFit = couldPieceFit(piece, contiguousUncoveredLocations);
-                        if (couldAnyPieceFit) break;
-                    }
-                    if (!couldAnyPieceFit) return false;
-
-                }
-            }
-
-           /* foreach (IPentominoePuzzlePiece piece in unUsedPieces.Values)
-            {
-                if (!isPiecePlayable(piece))
-                    return false;
-            }*/
-
-            return true;
-        }
-
-        private bool couldPieceFit (PentominoePuzzlePiece piece, HashSet<PentominoeGameBoardLocation> contiguousLocations)
-        {
-            bool ret = false;
-            //determine size of continguous location
-            int xMax=0, xMin=0, yMax=0, yMin = 0;
-            foreach (PentominoeGameBoardLocation loc in contiguousLocations)
-            {
-                if (loc.Xindex > xMax) xMax = loc.Xindex;
-                if (loc.Xindex < xMin) xMin = loc.Xindex;
-
-                if (loc.Yindex > yMax) yMax = loc.Yindex;
-                if (loc.Yindex < yMin) yMin = loc.Yindex;
-            }
-
-            int xLength = xMax - xMin + 1;
-            int yLength = yMax - yMin + 1;
-
-            if ((piece.Length() <= xLength && piece.Width() <= yLength) || (piece.Length() <= yLength && piece.Width() <= xLength)) ret = true;
-
-            return ret;
-        }
-
         private bool getEmptyAdjacents(PentominoeGameBoardLocation location, HashSet<PentominoeGameBoardLocation> emptyAdjacents)
         {
             if (emptyAdjacents == null)
@@ -1046,6 +1007,108 @@ namespace myFirstAzureWebApp.Models
                 return false;
         }
 
+        private bool checkContiguousSpace()
+        {
+            
+            //each contiguous block has at least 5 units
+            //count number of contiguous blocks and see that each is divisible by 5
+            //if contiguous space is  exactly 5 - does it match with any of the pieces?
+
+            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
+
+            HashSet<PentominoeGameBoardLocation> checkedLocation = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+
+            List<PentominoeGameBoardLocation> uncoveredLocations = getAllBoardLocations(false);
+            int totalUncovered = uncoveredLocations.Count;
+
+
+            foreach (PentominoeGameBoardLocation loc in uncoveredLocations)
+            {
+                PentominoeGameBoardLocation tempLoc = new PentominoeGameBoardLocation(loc);
+                if (checkedLocation.Count == totalUncovered) break;
+
+                if (!checkedLocation.Contains(tempLoc))
+                {
+                    checkedLocation.Add(tempLoc);
+
+                    HashSet<PentominoeGameBoardLocation> contiguousUncoveredLocations = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+                    contiguousUncoveredLocations.Add(tempLoc);
+                    if (!getEmptyAdjacents(tempLoc, contiguousUncoveredLocations))
+                    {
+                        return false;  //single uncovered location
+                    }
+                    else
+                    {
+                        if (contiguousUncoveredLocations.Count % 5 != 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            if (contiguousUncoveredLocations.Count == 5) //enough for single piece?
+                            {
+                                string pieceThatFits = whichPieceFits(contiguousUncoveredLocations.ToList());
+                                if (pieceThatFits == null) return false;
+
+                            }
+                            checkedLocation.Union(contiguousUncoveredLocations);
+                        }
+                    }
+
+                }
+            }
+
+            return true;
+        }
+ 
+        private bool couldPieceFit (PentominoePuzzlePiece piece, HashSet<PentominoeGameBoardLocation> contiguousLocations)
+        {
+            bool ret = false;
+            //determine size of continguous location
+            int xMax=0, xMin=0, yMax=0, yMin = 0;
+            foreach (PentominoeGameBoardLocation loc in contiguousLocations)
+            {
+                if (loc.Xindex > xMax) xMax = loc.Xindex;
+                if (loc.Xindex < xMin) xMin = loc.Xindex;
+
+                if (loc.Yindex > yMax) yMax = loc.Yindex;
+                if (loc.Yindex < yMin) yMin = loc.Yindex;
+            }
+
+            int xLength = xMax - xMin + 1;
+            int yLength = yMax - yMin + 1;
+
+            if ((piece.Length() <= xLength && piece.Width() <= yLength) || (piece.Length() <= yLength && piece.Width() <= xLength)) ret = true;
+
+            return ret;
+        }
+
+        private string whichPieceFits(List<PentominoeGameBoardLocation> contiguousLocation)
+        {
+            string pieceName = null;
+            bool ret = false;
+            string[] pieceNames = unUsedPieces.Keys.ToArray();
+         
+            for (int i = 0; i < pieceNames.Length; i++)
+            {
+                PentominoePuzzlePiece piece = ChoosePiece(pieceNames[i]);
+
+                foreach(PentominoeGameBoardLocation loc in contiguousLocation)
+                {
+                    ret = PlayPiece(piece, loc.Xindex, loc.Yindex);
+                    if (ret)
+                    {
+                        pieceName = piece.pieceName();
+                        break;
+                    }
+                }
+                if (ret) break;
+
+            }
+            if (ret) UndoLastPlay();
+            return pieceName;
+        }
+
 
         private bool isPiecePlayable(PentominoePuzzlePiece piece)
         {
@@ -1066,10 +1129,7 @@ namespace myFirstAzureWebApp.Models
             return ret;
 
         }
-        public void solveBoardPieceByPiece()
-        {
-            PlacePieceByPiece(unUsedPieces.Values.ToArray<PentominoePuzzlePiece>());
-        }
+        
        private bool PlacePieceByPiece(PentominoePuzzlePiece[] pieceSet)
         {
             if (pieceSet.Length == 0) return true;
@@ -1105,12 +1165,17 @@ namespace myFirstAzureWebApp.Models
                    
                 }
 
+ 
+
           
             return ret;
 
         }
 
-     
+        public void solveBoardPieceByPiece()
+        {
+            PlacePieceByPiece(unUsedPieces.Values.ToArray<PentominoePuzzlePiece>());
+        }
         public void solveBoardLocByLoc()
         {
             bool ret = false;
