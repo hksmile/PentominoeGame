@@ -648,6 +648,58 @@ namespace myFirstAzureWebApp.Models
 
         public PentominoeGameBoard()
         {
+            ResetBoard();   
+        }
+
+        private void InitializePuzzlePieces()
+        {
+            unUsedPieces = new Dictionary<string, PentominoePuzzlePiece>();
+            PentominoePuzzlePieceFactory puzzlePieceFactory = new PentominoePuzzlePieceFactory();
+
+            PentominoePuzzlePiece piece = puzzlePieceFactory.CreatePuzzlePiece("X");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("I");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("T");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("U");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("V");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("N");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("W");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("Y");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("P");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("L");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("Z");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+
+            piece = puzzlePieceFactory.CreatePuzzlePiece("F");
+            unUsedPieces.Add(piece.pieceName(), piece);
+
+        }
+
+        public bool ResetBoard()
+        {
             gameBoard = new PentominoeGameBoardLocation[boardHeight, boardWidth];
 
             for (int i = 0; i < boardHeight; i++)
@@ -658,19 +710,16 @@ namespace myFirstAzureWebApp.Models
                     gameBoard[i, j] = loc;
                 }
             }
+            playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
 
             InitializePuzzlePieces();
-        }
 
-       
+            return true;
+
+        }
         public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName, bool checkSolvable)
         {
             bool ret = true;
-
-            if (playStack == null)
-            {
-                playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
-            }
 
             playStack.Push(locations);
 
@@ -737,7 +786,6 @@ namespace myFirstAzureWebApp.Models
             return loc;
         }
 
-
         public string[][] GetBoard()
         {
             string[][] board = new string[boardHeight][];
@@ -762,7 +810,6 @@ namespace myFirstAzureWebApp.Models
 
             return null;
 
-
         }
 
         public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, int unitNumber, TransformOrientations orientation)
@@ -782,9 +829,6 @@ namespace myFirstAzureWebApp.Models
 
             return ret;
         }
-
-
-        //can't ask if playable until I've committed to covereing
 
         public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
         {
@@ -868,66 +912,7 @@ namespace myFirstAzureWebApp.Models
             return ret;
 
         }
-
-        public void InitializePuzzlePieces()
-        {
-            unUsedPieces = new Dictionary<string, PentominoePuzzlePiece>();
-            PentominoePuzzlePieceFactory puzzlePieceFactory = new PentominoePuzzlePieceFactory();
-
-            PentominoePuzzlePiece piece = puzzlePieceFactory.CreatePuzzlePiece("X");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("I");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("T");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("U");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("V");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("N");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("W");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("Y");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("P");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("L");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("Z");
-            unUsedPieces.Add(piece.pieceName(), piece);
-
-
-            piece = puzzlePieceFactory.CreatePuzzlePiece("F");
-            unUsedPieces.Add(piece.pieceName(), piece);
-            /*
-            unUsedPieces.Add(new PentominoePuzzlePiece("F"));
-            
-            unUsedPieces.Add(new PentominoePuzzlePiece("L"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("N"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("P"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("T"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("U"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("V"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("W"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("Y"));
-            unUsedPieces.Add(new PentominoePuzzlePiece("Z"));
-            */
-
-        }
+  
         public bool IsBoardSolved()
         {
             return (unUsedPieces.Count == 0) && (getAllBoardLocations(true).Count == 0);
