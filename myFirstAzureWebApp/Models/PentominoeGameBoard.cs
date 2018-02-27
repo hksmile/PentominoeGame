@@ -663,8 +663,10 @@ namespace myFirstAzureWebApp.Models
         }
 
        
-        public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName)
+        public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName, bool checkSolvable)
         {
+            bool ret = true;
+
             if (playStack == null)
             {
                 playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
@@ -680,7 +682,13 @@ namespace myFirstAzureWebApp.Models
 
             Trace.WriteLine("Pushed Piece " + pieceName + " unit " + locations.First().CoveredUnit + " into " + locations.First().Xindex + "," + locations.First().Yindex);
 
-            return true;
+            if (checkSolvable && !IsBoardPlayable())
+            {
+                UndoLastPlay();
+                ret = false;
+            }
+
+            return ret;
 
         }
         public bool UndoLastPlay()
@@ -768,12 +776,8 @@ namespace myFirstAzureWebApp.Models
 
             if (ret)
             {
-                CommitPlay(locationsCovered, piece.pieceName());
-                if (!IsBoardPlayable())
-                {
-                    UndoLastPlay();
-                    ret = false;
-                }
+                CommitPlay(locationsCovered, piece.pieceName(), true);
+                
             }
 
             return ret;
@@ -782,7 +786,7 @@ namespace myFirstAzureWebApp.Models
 
         //can't ask if playable until I've committed to covereing
 
-        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false, bool commitPlay = true)
+        public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
         {
             if (piece == null) return false;
             PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
@@ -804,13 +808,8 @@ namespace myFirstAzureWebApp.Models
 
                     if (ret)
                     {
-                        CommitPlay(locationsCovered, piece.pieceName());
-                        if (checkSolvable && !IsBoardPlayable())
-                        {
-                            UndoLastPlay();
-                            ret = false;
-                        }
-                        else if (!commitPlay) UndoLastPlay();
+                        ret = CommitPlay(locationsCovered, piece.pieceName(), checkSolvable);
+                       
                     }
                     if (ret) break;
                 }
@@ -1072,7 +1071,7 @@ namespace myFirstAzureWebApp.Models
             
             foreach (PentominoeGameBoardLocation loc in allUncoveredLocations)
             {
-                if (PlayPiece(piece, loc.Xindex, loc.Yindex, true, false))
+                if (PlayPiece(piece, loc.Xindex, loc.Yindex, true))
                 {
                     ret = true;
                     break;
@@ -1102,7 +1101,7 @@ namespace myFirstAzureWebApp.Models
                     while (!ret && piece != null && index < allUncoveredLocations.Count)
                     {
                         PentominoeGameBoardLocation loc = allUncoveredLocations[index];
-                        ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
+                        ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true);
                         if (ret)
                         {
                             
@@ -1142,7 +1141,7 @@ namespace myFirstAzureWebApp.Models
                         PentominoePuzzlePiece piece = ChoosePiece(name);
                         if (piece != null)
                         {
-                            ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true, true);
+                            ret = PlayPiece(piece, loc.Xindex, loc.Yindex, true);
                             if (ret)
                             {
                                 break;
