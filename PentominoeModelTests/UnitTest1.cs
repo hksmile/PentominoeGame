@@ -666,7 +666,7 @@ namespace PentominoeModelTests
         */
         
             
-      /*  [TestMethod]
+        [TestMethod]
         public void SolveForFivePieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
@@ -695,7 +695,7 @@ namespace PentominoeModelTests
             Assert.IsTrue(board.IsBoardSolved());
         }
 
-       
+      /* 
         [TestMethod]
         public void SolveForFivePiecesByLoc()
         {
@@ -878,8 +878,7 @@ namespace PentominoeModelTests
             PentominoePuzzlePiece piece = board.ChoosePiece("X");
             bool ret = board.PlayPiece(piece, 0, 1);
             Assert.IsTrue(ret);
-            ret = board.UndoLastPlay();
-            Assert.IsTrue(ret);
+            Assert.IsNotNull(board.UndoLastPlay());
 
         }
         [TestMethod]
