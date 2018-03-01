@@ -641,16 +641,26 @@ namespace myFirstAzureWebApp.Models
     public class GamePlay
     {
         //what makes a play equal?  sam list of locations with same piece .. don't care about unit number.. because symmetry is irrelevant here.
-        public List<PentominoeGameBoardLocation> locationsCovered;
+        public HashSet<PentominoeGameBoardLocation> locationsCovered;
         public GamePlay(List<PentominoeGameBoardLocation> locs)
         {
-            locationsCovered = new List<PentominoeGameBoardLocation>(locs);
+            PentominoeLocationComparer locComparer = new PentominoeLocationComparer();
+            locationsCovered = new HashSet<PentominoeGameBoardLocation>(locs, locComparer);
 
+        }
+        public PentominoePuzzlePiece Piece()
+        {
+            PentominoePuzzlePiece piece = null;
+            if (locationsCovered != null && locationsCovered.First() != null)
+            {
+                piece = locationsCovered.First().CoveredPiece;
+            }
+            return piece;
         }
 
     }
 
-    public class GamePlayComparer: IEqualityComparer<GamePlay>
+   /* public class GamePlayComparer: IEqualityComparer<GamePlay>
     {
         public bool Equals(GamePlay play1, GamePlay play2)
         {
@@ -671,12 +681,12 @@ namespace myFirstAzureWebApp.Models
             return 0;
 
         }
-    }
+    }*/
     public class PentominoeGameBoard
     {
         private PentominoeGameBoardLocation[,] gameBoard;
         private Dictionary<string, PentominoePuzzlePiece> unUsedPieces;
-        private Stack<HashSet<PentominoeGameBoardLocation>> playStack;
+        private Stack<GamePlay> playStack;
 
         private int boardHeight = 6;
         private int boardWidth = 10;
@@ -745,7 +755,7 @@ namespace myFirstAzureWebApp.Models
                     gameBoard[i, j] = loc;
                 }
             }
-            playStack = new Stack<HashSet<PentominoeGameBoardLocation>>();
+            playStack = new Stack<GamePlay>();
 
             InitializePuzzlePieces();
 
@@ -765,8 +775,8 @@ namespace myFirstAzureWebApp.Models
         {
             if (piece == null) return false;
             bool ret = false;
-            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
-            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+            
+            List<PentominoeGameBoardLocation> locationsCovered = new List<PentominoeGameBoardLocation>();
 
             ret = DoesUnitPieceCoverLocation(piece, unitNumber, xIndex, yIndex, locationsCovered, null, orientation);
 
@@ -781,9 +791,8 @@ namespace myFirstAzureWebApp.Models
         public bool PlayPiece(PentominoePuzzlePiece piece, int xIndex, int yIndex, bool checkSolvable = false)
         {
             if (piece == null) return false;
-            PentominoeLocationComparer locationComparer = new PentominoeLocationComparer();
 
-            HashSet<PentominoeGameBoardLocation> locationsCovered = new HashSet<PentominoeGameBoardLocation>(locationComparer);
+            List<PentominoeGameBoardLocation> locationsCovered = new List<PentominoeGameBoardLocation>();
             bool ret = false;
             string orientString = "";
 
@@ -813,11 +822,12 @@ namespace myFirstAzureWebApp.Models
             return ret;
         }
 
-        public bool CommitPlay(HashSet<PentominoeGameBoardLocation> locations, string pieceName, bool checkSolvable)
+        public bool CommitPlay(List<PentominoeGameBoardLocation> locations, string pieceName, bool checkSolvable)
         {
             bool ret = true;
 
-            playStack.Push(locations);
+            GamePlay play = new GamePlay(locations);
+            playStack.Push(play);
 
             unUsedPieces.Remove(pieceName);
             foreach (PentominoeGameBoardLocation loc in locations)
@@ -839,14 +849,14 @@ namespace myFirstAzureWebApp.Models
         public bool UndoLastPlay()
         {
             if (playStack == null || playStack.Count == 0) return false;
-            HashSet<PentominoeGameBoardLocation> lastPlay = playStack.Pop();
-            PentominoePuzzlePiece piece = lastPlay.First().CoveredPiece;
+            GamePlay lastPlay = playStack.Pop();
+            PentominoePuzzlePiece piece = lastPlay.Piece();
 
             Trace.WriteLine("Removed piece " + piece.pieceName());
 
             unUsedPieces.Add(piece.pieceName(), piece);
 
-            foreach (PentominoeGameBoardLocation loc in lastPlay)
+            foreach (PentominoeGameBoardLocation loc in lastPlay.locationsCovered)
             {
                 //why is this updating my loc value also?
                 PentominoeGameBoardLocation boardLocation = gameBoard[loc.Yindex, loc.Xindex];
@@ -917,7 +927,7 @@ namespace myFirstAzureWebApp.Models
             return loc;
         }
 
-        private bool DoesUnitPieceCoverLocation(PentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, HashSet<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
+        private bool DoesUnitPieceCoverLocation(PentominoePuzzlePiece piece, int unitNumber, int xIndex, int yIndex, List<PentominoeGameBoardLocation> updatedLocations, HashSet<int> unitsPlaced, TransformOrientations orientation)
         {
             PentominoeGameBoardLocation location;
             if (updatedLocations == null) return false;
@@ -1135,11 +1145,11 @@ namespace myFirstAzureWebApp.Models
             if (pieceSet.Length == 0) return true;
          
             bool ret = false;
-
+            int pieceIndex = 0;
          
-                for (int i = 0; i< pieceSet.Length; i++)
+                for (pieceIndex=0; pieceIndex < pieceSet.Length;pieceIndex++)
                 {
-                    PentominoePuzzlePiece piece = ChoosePiece(pieceSet[i].pieceName());
+                    PentominoePuzzlePiece piece = ChoosePiece(pieceSet[pieceIndex].pieceName());
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(false);
                     int index = 0;
 
@@ -1150,9 +1160,9 @@ namespace myFirstAzureWebApp.Models
                         if (ret)
                         {
                             
-                            if (i + 1 <  pieceSet.Length)
+                            if (pieceIndex + 1 <  pieceSet.Length)
                             {
-                                ArraySegment<PentominoePuzzlePiece> remainingPieces = new ArraySegment<PentominoePuzzlePiece>(pieceSet, i + 1, pieceSet.Length - (i+1));
+                                ArraySegment<PentominoePuzzlePiece> remainingPieces = new ArraySegment<PentominoePuzzlePiece>(pieceSet, pieceIndex + 1, pieceSet.Length - (pieceIndex+1));
                                 ret = PlacePieceByPiece(remainingPieces.ToArray<PentominoePuzzlePiece>());
                             
                             }
@@ -1161,6 +1171,12 @@ namespace myFirstAzureWebApp.Models
                         }
                         index++;
                     }
+                   if (! ret)
+                   {
+                       UndoLastPlay();
+                        ArraySegment<PentominoePuzzlePiece> remainingPieces = new ArraySegment<PentominoePuzzlePiece>(pieceSet, pieceIndex, pieceSet.Length - (pieceIndex));
+                        ret = PlacePieceByPiece(remainingPieces.ToArray<PentominoePuzzlePiece>());
+                   }
 
                    
                 }

@@ -666,7 +666,7 @@ namespace PentominoeModelTests
         */
         
             
-        [TestMethod]
+      /*  [TestMethod]
         public void SolveForFivePieces()
         {
             PentominoeGameBoard board = new PentominoeGameBoard();
@@ -695,7 +695,7 @@ namespace PentominoeModelTests
             Assert.IsTrue(board.IsBoardSolved());
         }
 
-       /* 
+       
         [TestMethod]
         public void SolveForFivePiecesByLoc()
         {
