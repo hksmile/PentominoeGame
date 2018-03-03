@@ -724,6 +724,7 @@ namespace PentominoeModelTests
             string[][] b = board.GetBoard();
             Assert.IsTrue(board.IsBoardSolved());
         }
+        */
         [TestMethod]
         public void SolveForSixPieces()
         {
@@ -752,6 +753,7 @@ namespace PentominoeModelTests
             Assert.IsTrue(board.IsBoardSolved());
         }
 
+        /*
         [TestMethod]
         public void SolveForSevenPieces()
         {

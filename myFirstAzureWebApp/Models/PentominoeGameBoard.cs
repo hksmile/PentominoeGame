@@ -623,6 +623,28 @@ namespace myFirstAzureWebApp.Models
             coveredPiece = piece;
             coveredUnit = unitNumber;
         }
+
+        private class SortLocationsHelper : IComparer<PentominoeGameBoardLocation>
+        {
+            public int Compare(PentominoeGameBoardLocation loc1, PentominoeGameBoardLocation loc2)
+            {
+                if (loc1.Xindex > loc2.Xindex)
+                    return 1;
+                else if (loc1.Xindex < loc2.Xindex)
+                    return -1;
+                else if (loc1.Yindex > loc2.Yindex)
+                    return 1;
+                else if (loc2.Yindex < loc2.Yindex)
+                    return -1;
+                else
+                    return 0;
+            }
+        }
+
+        public static IComparer<PentominoeGameBoardLocation> SortLocations()
+        {
+            return (IComparer<PentominoeGameBoardLocation>) new SortLocationsHelper();
+        }
     }
 
     public class PentominoeLocationComparer : IEqualityComparer<PentominoeGameBoardLocation>
@@ -638,15 +660,29 @@ namespace myFirstAzureWebApp.Models
         }
     }
 
-    public class GamePlay :IEqualityComparer<GamePlay>
+   
+
+    public class GamePlay
     {
         //what makes a play equal?  sam list of locations with same piece .. don't care about unit number.. because symmetry is irrelevant here.
         public HashSet<PentominoeGameBoardLocation> locationsCovered;
         public GamePlay(List<PentominoeGameBoardLocation> locs)
         {
             PentominoeLocationComparer locComparer = new PentominoeLocationComparer();
+            locs.Sort(PentominoeGameBoardLocation.SortLocations());
             locationsCovered = new HashSet<PentominoeGameBoardLocation>(locs, locComparer);
+            
 
+        }
+        public GamePlay(GamePlay play)
+        {
+            PentominoeLocationComparer locComparer = new PentominoeLocationComparer();
+            locationsCovered = new HashSet<PentominoeGameBoardLocation>(locComparer);
+
+            foreach (PentominoeGameBoardLocation loc in play.locationsCovered)
+            {
+                locationsCovered.Add(new PentominoeGameBoardLocation(loc));
+            }
         }
         public PentominoePuzzlePiece Piece()
         {
@@ -657,6 +693,10 @@ namespace myFirstAzureWebApp.Models
             }
             return piece;
         }
+    }
+
+    public class GamePlayComparer: IEqualityComparer<GamePlay>
+    { 
 
         public bool Equals(GamePlay play1, GamePlay play2)
         {
@@ -674,7 +714,12 @@ namespace myFirstAzureWebApp.Models
         }
         public int GetHashCode(GamePlay obj)
         {
-            return obj.GetHashCode();
+            string hash = obj.Piece().pieceName();
+            foreach (PentominoeGameBoardLocation loc in obj.locationsCovered)
+            {
+                hash += loc.Xindex + loc.Yindex;
+            }
+            return hash.GetHashCode();
 
         }
 
@@ -686,7 +731,7 @@ namespace myFirstAzureWebApp.Models
         private PentominoeGameBoardLocation[,] gameBoard;
         private Dictionary<string, PentominoePuzzlePiece> unUsedPieces;
         private Stack<GamePlay> playStack;
-        private List<GamePlay> badPlays;
+        private HashSet<GamePlay> badPlays;
 
         private int boardHeight = 6;
         private int boardWidth = 10;
@@ -756,7 +801,9 @@ namespace myFirstAzureWebApp.Models
                 }
             }
             playStack = new Stack<GamePlay>();
-            badPlays = new List<GamePlay>();
+
+            GamePlayComparer playComparer = new GamePlayComparer();
+            badPlays = new HashSet<GamePlay>(playComparer);
 
             InitializePuzzlePieces();
 
@@ -800,12 +847,15 @@ namespace myFirstAzureWebApp.Models
         }
         public void AddBadPlay(GamePlay play)
         {
-            badPlays.Add(play);
+            GamePlay badPlay = new GamePlay(play);
+
+            badPlays.Add(badPlay);
 
         }
         public void clearBadPlays()
         {
-            badPlays = new List<GamePlay>();
+            GamePlayComparer playComparer = new GamePlayComparer();
+            badPlays = new HashSet<GamePlay>(playComparer);
         }
         public bool isBadPlay(GamePlay play)
         {
@@ -876,6 +926,7 @@ namespace myFirstAzureWebApp.Models
             }
 
             Trace.WriteLine("Pushed Piece " + pieceName + " unit " + locations.First().CoveredUnit + " into " + locations.First().Xindex + "," + locations.First().Yindex);
+            IsBoardCorrupted();
 
             return play;
         }
@@ -895,8 +946,28 @@ namespace myFirstAzureWebApp.Models
                 PentominoeGameBoardLocation boardLocation = gameBoard[loc.Yindex, loc.Xindex];
                 boardLocation.CoverLocation(null, -1);
             }
+            IsBoardCorrupted();
 
             return lastPlay;
+        }
+
+        private bool IsBoardCorrupted()
+        {
+            bool ret = true;
+            string[][] b = GetBoard();
+            foreach (string pieceName in unUsedPieces.Keys)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (b[i].Contains(pieceName))
+                    {
+                        ret = false;
+                        break;
+                    }
+                }
+            }
+            return ret;
+
         }
 
         public string[][] GetBoard()
@@ -1182,7 +1253,7 @@ namespace myFirstAzureWebApp.Models
          
                 for (pieceIndex=0; pieceIndex < pieceSet.Length;pieceIndex++)
                 {
-                    clearBadPlays();
+                    
                     PentominoePuzzlePiece piece = ChoosePiece(pieceSet[pieceIndex].pieceName());
                     List<PentominoeGameBoardLocation> allUncoveredLocations = getAllBoardLocations(false);
                     int index = 0;
@@ -1224,13 +1295,27 @@ namespace myFirstAzureWebApp.Models
 
         public void solveBoardPieceByPiece()
         {
-
+            string[] lastUnusedPieceSet = null;
+            int piecesToPlace = unUsedPieces.Count();
+            clearBadPlays();
             while (!IsBoardSolved())
             {
                 if (!IsBoardPlayable()) break;
-               PlacePieceByPiece(unUsedPieces.Values.ToArray<PentominoePuzzlePiece>());
+
+                if (lastUnusedPieceSet != null)
+                { 
+                    IEnumerable<string> piecesInCommon = lastUnusedPieceSet.Intersect(unUsedPieces.Keys.ToArray());
+                    if (piecesInCommon != null && piecesInCommon.Count() == lastUnusedPieceSet.Count())
+                    {
+                        if (unUsedPieces.Count == piecesToPlace) break;
+                        UndoLastPlay();
+                    }
+                }
+                lastUnusedPieceSet = unUsedPieces.Keys.ToArray();
+                PlacePieceByPiece(unUsedPieces.Values.ToArray<PentominoePuzzlePiece>());
                 string[][] b = GetBoard();
             }
+            clearBadPlays();
         }
         public void solveBoardLocByLoc()
         {
